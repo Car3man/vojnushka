@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>VojnushkaGameServer</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>VojnushkaGameServer</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Arch" Version="1.2.6" />
+      <PackageReference Include="Autofac" Version="7.1.0" />
+      <PackageReference Include="WatsonWebsocket" Version="4.0.11" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Folder Include="Domain\Components\" />
+    </ItemGroup>
+
+</Project>
