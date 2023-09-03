@@ -3,23 +3,32 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <AssemblyName>VojnushkaClientNuget</AssemblyName>
+    <AssemblyName>VojnushkaClientDeps</AssemblyName>
     <RootNamespace />
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IsPackable>false</IsPackable>
+    <Authors>KlopoffA</Authors>
+    <Company>KlopoffA</Company>
+    <PackageId>VojnushkaClientDeps</PackageId>
+    <Product>VojnushkaClientDeps</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\vojnushka-client\Assets\Vojnushka\Plugins\Nuget</OutputPath>
+    <OutputPath>..\vojnushka-client\Assets\Vojnushka\Plugins\Deps\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\vojnushka-client\Assets\Vojnushka\Plugins\Nuget</OutputPath>
+    <OutputPath>..\vojnushka-client\Assets\Vojnushka\Plugins\Deps\</OutputPath>
     <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Arch" Version="1.2.6" />
     <PackageReference Include="Autofac" Version="7.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\vojnushka-proto\vojnushka-proto.csproj" />
   </ItemGroup>
 
 </Project>
