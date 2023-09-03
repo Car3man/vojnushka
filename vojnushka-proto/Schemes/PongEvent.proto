@@ -1,0 +1,3 @@
+﻿message PongEvent {
+  required string pongMessage = 1;
+}
