@@ -7,6 +7,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>VojnushkaGameServer</AssemblyName>
+        <IsPackable>false</IsPackable>
+        <Authors>KlopoffA</Authors>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,8 +18,15 @@
     </ItemGroup>
 
 
+
     <ItemGroup>
-      <Folder Include="Domain\Components\" />
+      <Folder Include="Domain\PingPong\Components\" />
+    </ItemGroup>
+
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\vojnushka-proto\vojnushka-proto.csproj" />
     </ItemGroup>
 
 </Project>

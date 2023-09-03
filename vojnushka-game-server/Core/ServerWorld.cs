@@ -67,6 +67,11 @@ public class ServerWorld : IServerWorld, IDisposable
             Id = peer.Id
         });
         
+        foreach (var system in _peerEventSystems)
+        {
+            system.OnPeerConnect(_world, entityRef);
+        }
+        
         _entityRefToPeerMap.Add(entityRef, peer);
         _peerToEntityRefMap.Add(peer, entityRef);
     }
@@ -94,6 +99,11 @@ public class ServerWorld : IServerWorld, IDisposable
                 _world.Destroy(entity);
             }
         });
+        
+        foreach (var system in _peerEventSystems)
+        {
+            system.OnPeerConnect(_world, _peerToEntityRefMap[peer]);
+        }
         
         _entityRefToPeerMap.Remove(_peerToEntityRefMap[peer]);
         _peerToEntityRefMap.Remove(peer);

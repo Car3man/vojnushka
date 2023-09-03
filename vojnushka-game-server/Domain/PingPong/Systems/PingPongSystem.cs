@@ -2,7 +2,7 @@
 using Arch.Core;
 using VojnushkaGameServer.Core;
 
-namespace VojnushkaGameServer.Domain;
+namespace VojnushkaGameServer.Domain.PingPong;
 
 public class PingPongSystem : ITickSystem
 {
