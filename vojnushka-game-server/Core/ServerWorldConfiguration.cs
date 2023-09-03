@@ -2,5 +2,5 @@
 
 public class ServerWorldConfiguration
 {
-    public ISystem[] Systems;
+    public ISystem[] Systems = Array.Empty<ISystem>();
 }
