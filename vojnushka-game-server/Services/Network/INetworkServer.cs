@@ -7,10 +7,10 @@ public interface INetworkServer
     event PeerDisconnectDelegate OnPeerDisconnect;
     void Start();
     void Stop();
-    void Send(IPeer peer, byte[] data);
-    void Broadcast(byte[] data);
+    void Send(IPeer peer, ServerMessage message);
+    void Broadcast(ServerMessage message);
 }
 
 public delegate void PeerConnectDelegate(IPeer peer);
-public delegate void PeerMessageDelegate(IPeer peer, byte[] data);
+public delegate void PeerMessageDelegate(IPeer peer, ServerMessage message);
 public delegate void PeerDisconnectDelegate(IPeer peer);

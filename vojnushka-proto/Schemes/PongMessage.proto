@@ -1,0 +1,3 @@
+﻿message PongMessage {
+  required string message = 1;
+}

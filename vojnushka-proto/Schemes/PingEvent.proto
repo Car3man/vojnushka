@@ -1,3 +1,0 @@
-﻿message PingEvent {
-  required string pingMessage = 1;
-}

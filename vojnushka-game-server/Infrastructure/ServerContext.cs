@@ -28,7 +28,7 @@ public class ServerContext : IDisposable, IAsyncDisposable
         RegisterLogger(containerBuilder);
         RegisterNetwork(containerBuilder);
         RegisterServer(containerBuilder);
-        RegisterServerWorld(containerBuilder);
+        RegisterWorld(containerBuilder);
         return containerBuilder.Build();
     }
 
@@ -52,19 +52,8 @@ public class ServerContext : IDisposable, IAsyncDisposable
             .RegisterType<Server>();
     }
     
-    private void RegisterServerWorld(ContainerBuilder containerBuilder)
+    private void RegisterWorld(ContainerBuilder containerBuilder)
     {
-        var configuration = new ServerWorldConfiguration()
-        {
-            Systems = new ISystem[]
-            {
-                new PingPongSystem()
-            }
-        };
-
-        containerBuilder
-            .RegisterInstance(configuration);
-        
         containerBuilder
             .RegisterType<ServerWorld>()
             .As<IServerWorld>();

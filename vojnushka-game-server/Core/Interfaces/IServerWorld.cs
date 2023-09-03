@@ -9,8 +9,8 @@ public interface IServerWorld
     void Stop();
     void Tick(float deltaTime);
     void AddPeer(IPeer peer);
-    void AddPeerMessage(IPeer peer, byte[] data);
+    void AddPeerMessage(IPeer peer, ServerMessage message);
     void RemovePeer(IPeer peer);
 }
 
-public delegate void ServerWorldPeerRequestDelegate(IPeer peer, byte[] data);
+public delegate void ServerWorldPeerRequestDelegate(IPeer peer, ServerMessage message);

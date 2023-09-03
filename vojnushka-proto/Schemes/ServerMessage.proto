@@ -1,9 +1,9 @@
-﻿enum Types {
-  SERVER_EVENT = 0;
-  CLIENT_EVENT = 1;
+﻿enum ServerMessageType {
+  Ping = 0;
+  Pong = 1;
 }
 
 message ServerMessage {
-  required Types type = 1;
+  required ServerMessageType type = 1;
   required bytes data = 2;
 }

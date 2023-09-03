@@ -22,12 +22,12 @@ public static partial class ServerMessageReflection {
   static ServerMessageReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "ChNTZXJ2ZXJNZXNzYWdlLnByb3RvIjMKDVNlcnZlck1lc3NhZ2USFAoEdHlw",
-          "ZRgBIAIoDjIGLlR5cGVzEgwKBGRhdGEYAiACKAwqKwoFVHlwZXMSEAoMU0VS",
-          "VkVSX0VWRU5UEAASEAoMQ0xJRU5UX0VWRU5UEAE="));
+          "ChNTZXJ2ZXJNZXNzYWdlLnByb3RvIj8KDVNlcnZlck1lc3NhZ2USIAoEdHlw",
+          "ZRgBIAIoDjISLlNlcnZlck1lc3NhZ2VUeXBlEgwKBGRhdGEYAiACKAwqJwoR",
+          "U2VydmVyTWVzc2FnZVR5cGUSCAoEUGluZxAAEggKBFBvbmcQAQ=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
-        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Types), }, null, new pbr::GeneratedClrTypeInfo[] {
+        new pbr::GeneratedClrTypeInfo(new[] {typeof(global::ServerMessageType), }, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage), global::ServerMessage.Parser, new[]{ "Type", "Data" }, null, null, null, null)
         }));
   }
@@ -35,9 +35,9 @@ public static partial class ServerMessageReflection {
 
 }
 #region Enums
-public enum Types {
-  [pbr::OriginalName("SERVER_EVENT")] ServerEvent = 0,
-  [pbr::OriginalName("CLIENT_EVENT")] ClientEvent = 1,
+public enum ServerMessageType {
+  [pbr::OriginalName("Ping")] Ping = 0,
+  [pbr::OriginalName("Pong")] Pong = 1,
 }
 
 #endregion
@@ -92,12 +92,12 @@ public sealed partial class ServerMessage : pb::IMessage<ServerMessage>
 
   /// <summary>Field number for the "type" field.</summary>
   public const int TypeFieldNumber = 1;
-  private readonly static global::Types TypeDefaultValue = global::Types.ServerEvent;
+  private readonly static global::ServerMessageType TypeDefaultValue = global::ServerMessageType.Ping;
 
-  private global::Types type_;
+  private global::ServerMessageType type_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public global::Types Type {
+  public global::ServerMessageType Type {
     get { if ((_hasBits0 & 1) != 0) { return type_; } else { return TypeDefaultValue; } }
     set {
       _hasBits0 |= 1;
@@ -263,7 +263,7 @@ public sealed partial class ServerMessage : pb::IMessage<ServerMessage>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 8: {
-          Type = (global::Types) input.ReadEnum();
+          Type = (global::ServerMessageType) input.ReadEnum();
           break;
         }
         case 18: {
@@ -286,7 +286,7 @@ public sealed partial class ServerMessage : pb::IMessage<ServerMessage>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 8: {
-          Type = (global::Types) input.ReadEnum();
+          Type = (global::ServerMessageType) input.ReadEnum();
           break;
         }
         case 18: {

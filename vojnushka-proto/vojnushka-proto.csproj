@@ -15,6 +15,10 @@
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.24.2" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Generated\" />
+  </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="protoc --proto_path=$(ProjectDir)Schemes --csharp_out=$(ProjectDir)Generated $(ProjectDir)Schemes\*.proto" />

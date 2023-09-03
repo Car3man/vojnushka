@@ -1,33 +1,27 @@
 ﻿using Arch.Core;
+using VojnushkaGameServer.Domain.PingPong;
+using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
 
 namespace VojnushkaGameServer.Core;
 
 public class ServerWorld : IServerWorld, IDisposable
 {
-    private readonly World _world;
-    private readonly List<ISystem> _systems;
-    private readonly List<ITickSystem> _tickSystems;
-    private readonly List<IPeerEventSystem> _peerEventSystems;
-    private readonly Dictionary<EntityReference, IPeer> _entityRefToPeerMap;
-    private readonly Dictionary<IPeer, EntityReference> _peerToEntityRefMap;
-    private readonly Queue<NetPeerMessage> _peerMessageQueue;
+    private readonly World _world = World.Create();
+    private readonly List<ISystem> _systems = new();
+    private readonly List<ITickSystem> _tickSystems = new();
+    private readonly List<IPeerEventSystem> _peerEventSystems = new();
+    private readonly Dictionary<EntityReference, IPeer> _entityRefToPeerMap = new();
+    private readonly Dictionary<IPeer, EntityReference> _peerToEntityRefMap = new();
+    private readonly Queue<NetPeerMessage> _peerMessageQueue = new();
 
     public event ServerWorldPeerRequestDelegate? PeerRequest;
 
-    public ServerWorld(ServerWorldConfiguration configuration)
+    public ServerWorld(ILogger logger)
     {
-        _world = World.Create();
-        _systems = new List<ISystem>();
-        _tickSystems = new List<ITickSystem>();
-        _peerEventSystems = new List<IPeerEventSystem>();
-        _entityRefToPeerMap = new Dictionary<EntityReference, IPeer>();
-        _peerToEntityRefMap = new Dictionary<IPeer, EntityReference>();
-        _peerMessageQueue = new Queue<NetPeerMessage>();
-        
-        ConfigureWorld(configuration);
+        RegisterSystem(new PingPongSystem(logger));
     }
-
+    
     public void Start()
     {
         foreach (var system in _systems)
@@ -76,13 +70,13 @@ public class ServerWorld : IServerWorld, IDisposable
         _peerToEntityRefMap.Add(peer, entityRef);
     }
 
-    public void AddPeerMessage(IPeer peer, byte[] data)
+    public void AddPeerMessage(IPeer peer, ServerMessage message)
     {
         var peerEntityRef = _peerToEntityRefMap[peer];
         var peerMessage = new NetPeerMessage
         {
             EntityRef = peerEntityRef,
-            Data = data
+            Message = message
         };
         _peerMessageQueue.Enqueue(peerMessage);
     }
@@ -136,7 +130,7 @@ public class ServerWorld : IServerWorld, IDisposable
         _world.Query(in requestQuery, (ref NetPeerRequest netRequest) =>
         {
             var netRequestEntityRef = netRequest.EntityRef;
-            var netRequestData = netRequest.Data;
+            var netRequestMessage = netRequest.Message;
             
             _world.Query(in peerQuery, (in Entity netPeerEntity) =>
             {
@@ -147,20 +141,12 @@ public class ServerWorld : IServerWorld, IDisposable
 
                 if (_entityRefToPeerMap.TryGetValue(netRequestEntityRef, out var peer))
                 {
-                    PeerRequest?.Invoke(peer, netRequestData);
+                    PeerRequest?.Invoke(peer, netRequestMessage);
                 }
             });
         });
         
         _world.Destroy(requestQuery);
-    }
-
-    private void ConfigureWorld(ServerWorldConfiguration configuration)
-    {
-        foreach (var system in configuration.Systems)
-        {
-            RegisterSystem(system);
-        }
     }
     
     private void RegisterSystem(ISystem system)

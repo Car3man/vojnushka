@@ -5,5 +5,5 @@ namespace VojnushkaGameServer.Core;
 public struct NetPeerRequest
 {
     public EntityReference EntityRef;
-    public byte[] Data;
+    public ServerMessage Message;
 }

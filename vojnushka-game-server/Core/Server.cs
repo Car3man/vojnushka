@@ -62,14 +62,14 @@ public class Server : IServer, IDisposable
         _world.Stop();
     }
 
-    public void Send(IPeer peer, byte[] data)
+    public void Send(IPeer peer, ServerMessage message)
     {
-        _network.Send(peer, data);
+        _network.Send(peer, message);
     }
 
-    public void Broadcast(byte[] data)
+    public void Broadcast(ServerMessage message)
     {
-        _network.Broadcast(data);
+        _network.Broadcast(message);
     }
 
     public void OnPeerConnect(IPeer peer)
@@ -79,11 +79,11 @@ public class Server : IServer, IDisposable
         _world.AddPeer(peer);
     }
 
-    public void OnPeerMessage(IPeer peer, byte[] data)
+    public void OnPeerMessage(IPeer peer, ServerMessage message)
     {
         _logger.Log($"Peer message, guid: {peer.Id}");
         
-        _world.AddPeerMessage(peer, data);
+        _world.AddPeerMessage(peer, message);
     }
 
     public void OnPeerDisconnect(IPeer peer)
@@ -93,11 +93,11 @@ public class Server : IServer, IDisposable
         _world.RemovePeer(peer);
     }
     
-    private void OnWorldPeerRequest(IPeer peer, byte[] data)
+    private void OnWorldPeerRequest(IPeer peer, ServerMessage message)
     {
         _logger.Log($"Peer world request, guid: {peer.Id}");
         
-        Send(peer, data);
+        Send(peer, message);
     }
 
     private bool ShouldTerminate()
