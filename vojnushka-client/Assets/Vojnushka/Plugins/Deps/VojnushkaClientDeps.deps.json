@@ -7,13 +7,15 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "VojnushkaClientNuget/1.0.0": {
+      "VojnushkaClientDeps/1.0.0": {
         "dependencies": {
           "Arch": "1.2.6",
-          "Autofac": "7.1.0"
+          "Autofac": "7.1.0",
+          "VojnushkaProto": "1.0.0",
+          "VojnushkaProto.Reference": "1.0.0.0"
         },
         "runtime": {
-          "VojnushkaClientNuget.dll": {}
+          "VojnushkaClientDeps.dll": {}
         }
       },
       "Arch/1.2.6": {
@@ -57,6 +59,18 @@
           "lib/netstandard2.1/CommunityToolkit.HighPerformance.dll": {
             "assemblyVersion": "7.1.0.0",
             "fileVersion": "7.1.2.1"
+          }
+        }
+      },
+      "Google.Protobuf/3.24.2": {
+        "dependencies": {
+          "System.Memory": "4.5.4",
+          "System.Runtime.CompilerServices.Unsafe": "5.0.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Google.Protobuf.dll": {
+            "assemblyVersion": "3.24.2.0",
+            "fileVersion": "3.24.2.0"
           }
         }
       },
@@ -126,11 +140,27 @@
             "fileVersion": "1.0.2.0"
           }
         }
+      },
+      "VojnushkaProto/1.0.0": {
+        "dependencies": {
+          "Google.Protobuf": "3.24.2"
+        },
+        "runtime": {
+          "VojnushkaProto.dll": {}
+        }
+      },
+      "VojnushkaProto.Reference/1.0.0.0": {
+        "runtime": {
+          "VojnushkaProto.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
       }
     }
   },
   "libraries": {
-    "VojnushkaClientNuget/1.0.0": {
+    "VojnushkaClientDeps/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -162,6 +192,13 @@
       "sha512": "sha512-rVNzu/HQd60e8sInhHLpboWF9PU/kgenTxKYScjU3EpGMlCnSifomqiJuDhN4MILVioIwpm7eiurQNpngbWpAw==",
       "path": "communitytoolkit.highperformance/7.1.2",
       "hashPath": "communitytoolkit.highperformance.7.1.2.nupkg.sha512"
+    },
+    "Google.Protobuf/3.24.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rRtOCyoi3wdfCSvDbOs1qpk7s+2t2VsjFDzZGKVrqYnCn/R+msdcrmp9hHqnf5epMjOO/l0WncwnRcVnIdaV2g==",
+      "path": "google.protobuf/3.24.2",
+      "hashPath": "google.protobuf.3.24.2.nupkg.sha512"
     },
     "Microsoft.Extensions.ObjectPool/7.0.0": {
       "type": "package",
@@ -211,6 +248,16 @@
       "sha512": "sha512-2zQrqXKOUkpy3F0m0Hc69cFjblXAgTmrFSMpqVQt0V0QQknJrfmlaebyosA6N6qfC8klcqfKTWPb9H0xbnGbQw==",
       "path": "zeroallocjobscheduler/1.0.2",
       "hashPath": "zeroallocjobscheduler.1.0.2.nupkg.sha512"
+    },
+    "VojnushkaProto/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VojnushkaProto.Reference/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }
