@@ -4,7 +4,7 @@ using VojnushkaGameServer.Core;
 
 namespace VojnushkaGameServer.Domain;
 
-public class PingPongSystem : IWorldSystem
+public class PingPongSystem : ITickSystem
 {
     public void OnStart(World world)
     {

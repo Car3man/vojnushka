@@ -7,8 +7,8 @@ public class Server : IServer, IDisposable
 {
     private readonly ILogger _logger;
     private readonly INetworkServer _network;
+    private readonly IServerWorld _world;
 
-    private ServerWorld? _world;
     private float _time;
     private float _lastTickTime;
 
@@ -17,21 +17,26 @@ public class Server : IServer, IDisposable
 
     public Server(
         ILogger logger,
-        INetworkServer network
+        INetworkServer network,
+        IServerWorld world
         )
     {
         _logger = logger;
         _network = network;
+        _world = world;
+        
         _network.OnPeerConnect += OnPeerConnect;
         _network.OnPeerMessage += OnPeerMessage;
         _network.OnPeerDisconnect += OnPeerDisconnect;
+        _world.PeerRequest += OnWorldPeerRequest;
     }
-    
+
     public void Dispose()
     {
         _network.OnPeerConnect -= OnPeerConnect;
         _network.OnPeerMessage -= OnPeerMessage;
         _network.OnPeerDisconnect -= OnPeerDisconnect;
+        _world.PeerRequest -= OnWorldPeerRequest;
     }
     
     public async Task Run()
@@ -43,7 +48,6 @@ public class Server : IServer, IDisposable
 
     private async Task GameWorldLoop()
     {
-        _world = new ServerWorld(this);
         _world.Start();
 
         while (!ShouldTerminate())
@@ -72,21 +76,28 @@ public class Server : IServer, IDisposable
     {
         _logger.Log($"Peer connected, guid: {peer.Id}");
         
-        _world?.AddPeer(peer);
+        _world.AddPeer(peer);
     }
 
     public void OnPeerMessage(IPeer peer, byte[] data)
     {
         _logger.Log($"Peer message, guid: {peer.Id}");
         
-        _world?.AddPeerMessage(peer, data);
+        _world.AddPeerMessage(peer, data);
     }
 
     public void OnPeerDisconnect(IPeer peer)
     {
         _logger.Log($"Peer disconnected, guid: {peer.Id}");
         
-        _world?.RemovePeer(peer);
+        _world.RemovePeer(peer);
+    }
+    
+    private void OnWorldPeerRequest(IPeer peer, byte[] data)
+    {
+        _logger.Log($"Peer world request, guid: {peer.Id}");
+        
+        Send(peer, data);
     }
 
     private bool ShouldTerminate()

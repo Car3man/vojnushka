@@ -1,28 +1,31 @@
 ﻿using Arch.Core;
-using VojnushkaGameServer.Domain;
 using VojnushkaGameServer.Network;
 
 namespace VojnushkaGameServer.Core;
 
-public class ServerWorld : IDisposable
+public class ServerWorld : IServerWorld, IDisposable
 {
-    private readonly Server _server;
     private readonly World _world;
-    private readonly List<IWorldSystem> _systems;
+    private readonly List<ISystem> _systems;
+    private readonly List<ITickSystem> _tickSystems;
+    private readonly List<IPeerEventSystem> _peerEventSystems;
     private readonly Dictionary<EntityReference, IPeer> _entityRefToPeerMap;
     private readonly Dictionary<IPeer, EntityReference> _peerToEntityRefMap;
     private readonly Queue<NetPeerMessage> _peerMessageQueue;
 
-    public ServerWorld(Server server)
+    public event ServerWorldPeerRequestDelegate? PeerRequest;
+
+    public ServerWorld(ServerWorldConfiguration configuration)
     {
-        _server = server;
         _world = World.Create();
-        _systems = new List<IWorldSystem>();
+        _systems = new List<ISystem>();
+        _tickSystems = new List<ITickSystem>();
+        _peerEventSystems = new List<IPeerEventSystem>();
         _entityRefToPeerMap = new Dictionary<EntityReference, IPeer>();
         _peerToEntityRefMap = new Dictionary<IPeer, EntityReference>();
         _peerMessageQueue = new Queue<NetPeerMessage>();
         
-        RegisterSystems();
+        ConfigureWorld(configuration);
     }
 
     public void Start()
@@ -37,7 +40,7 @@ public class ServerWorld : IDisposable
     {
         CreatePeerMessages();
         
-        foreach (var system in _systems)
+        foreach (var system in _tickSystems)
         {
             system.OnTick(_world, deltaTime);
         }
@@ -134,7 +137,7 @@ public class ServerWorld : IDisposable
 
                 if (_entityRefToPeerMap.TryGetValue(netRequestEntityRef, out var peer))
                 {
-                    _server.Send(peer, netRequestData);
+                    PeerRequest?.Invoke(peer, netRequestData);
                 }
             });
         });
@@ -142,9 +145,27 @@ public class ServerWorld : IDisposable
         _world.Destroy(requestQuery);
     }
 
-    private void RegisterSystems()
+    private void ConfigureWorld(ServerWorldConfiguration configuration)
     {
-        _systems.Add(new PingPongSystem());
+        foreach (var system in configuration.Systems)
+        {
+            RegisterSystem(system);
+        }
+    }
+    
+    private void RegisterSystem(ISystem system)
+    {
+        _systems.Add(system);
+
+        if (system is ITickSystem tickSystem)
+        {
+            _tickSystems.Add(tickSystem);
+        }
+
+        if (system is IPeerEventSystem peerEventSystem)
+        {
+            _peerEventSystems.Add(peerEventSystem);
+        }
     }
 
     public void Dispose()

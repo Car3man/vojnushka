@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using VojnushkaGameServer.Core;
+using VojnushkaGameServer.Domain;
 using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
 using VojnushkaGameServer.WebSocketNetwork;
@@ -26,6 +27,7 @@ public class ServerContext : IDisposable, IAsyncDisposable
         RegisterLogger(containerBuilder);
         RegisterNetwork(containerBuilder);
         RegisterServer(containerBuilder);
+        RegisterServerWorld(containerBuilder);
         return containerBuilder.Build();
     }
 
@@ -47,6 +49,24 @@ public class ServerContext : IDisposable, IAsyncDisposable
     {
         containerBuilder
             .RegisterType<Server>();
+    }
+    
+    private void RegisterServerWorld(ContainerBuilder containerBuilder)
+    {
+        var configuration = new ServerWorldConfiguration()
+        {
+            Systems = new ISystem[]
+            {
+                new PingPongSystem()
+            }
+        };
+
+        containerBuilder
+            .RegisterInstance(configuration);
+        
+        containerBuilder
+            .RegisterType<ServerWorld>()
+            .As<IServerWorld>();
     }
 
     public void Dispose()

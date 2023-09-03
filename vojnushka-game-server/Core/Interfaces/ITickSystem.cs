@@ -2,9 +2,7 @@
 
 namespace VojnushkaGameServer.Core;
 
-public interface IWorldSystem
+public interface ITickSystem : ISystem
 {
-    void OnStart(World world);
     void OnTick(World world, float deltaTime);
-    void OnStop(World world);
 }
