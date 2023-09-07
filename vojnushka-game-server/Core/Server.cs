@@ -1,8 +1,5 @@
 ﻿using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
-using VojnushkaProto;
-using VojnushkaProto.Core;
-using VojnushkaProto.Utility;
 
 namespace VojnushkaGameServer.Core;
 
@@ -67,30 +64,28 @@ public class Server : IServer, IDisposable
         _world.Stop();
     }
 
-    public void Send(IPeer peer, ServerProtoMsg message)
+    public void Send(IPeer peer, byte[] data)
     {
-        _network.Send(peer, message);
+        _network.Send(peer, data);
     }
 
-    public void Broadcast(ServerProtoMsg message)
+    public void Broadcast(byte[] data)
     {
-        _network.Broadcast(message);
+        _network.Broadcast(data);
     }
 
     public void OnPeerConnect(IPeer peer)
     {
         _logger.Log($"Peer connected, guid: {peer.Id}");
-
-        GreetPeer(peer);
         
         _world.AddPeer(peer);
     }
 
-    public void OnPeerMessage(IPeer peer, ServerProtoMsg message)
+    public void OnPeerMessage(IPeer peer, byte[] data)
     {
         _logger.Log($"Peer message, guid: {peer.Id}");
         
-        _world.AddPeerMessage(peer, message);
+        _world.AddPeerMessage(peer, data);
     }
 
     public void OnPeerDisconnect(IPeer peer)
@@ -100,31 +95,18 @@ public class Server : IServer, IDisposable
         _world.RemovePeer(peer);
     }
 
-    private void OnWorldBroadcastRequest(ServerProtoMsg message)
+    private void OnWorldBroadcastRequest(byte[] data)
     {
         // _logger.Log("Broadcast world request");
         
-        Broadcast(message);
+        Broadcast(data);
     }
     
-    private void OnWorldPeerRequest(IPeer peer, ServerProtoMsg message)
+    private void OnWorldPeerRequest(IPeer peer, byte[] data)
     {
         _logger.Log($"Peer world request, guid: {peer.Id}");
         
-        Send(peer, message);
-    }
-
-    private void GreetPeer(IPeer peer)
-    {
-        var serverMessage = new ServerProtoMsg
-        {
-            Type = ServerProtoMsgType.Greeting,
-            Data = MessageUtility.MessageToByteString(new GreetingProtoMsg
-            {
-                Id = peer.IdNumber
-            })
-        };
-        Send(peer, serverMessage);
+        Send(peer, data);
     }
 
     private bool ShouldTerminate()

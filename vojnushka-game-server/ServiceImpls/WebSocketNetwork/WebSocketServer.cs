@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using VojnushkaGameServer.Network;
-using VojnushkaProto.Core;
+﻿using VojnushkaGameServer.Network;
 using WatsonWebsocket;
 
 namespace VojnushkaGameServer.WebSocketNetwork;
@@ -31,30 +29,18 @@ public class WebSocketServer : INetworkServer
         _ws.Stop();
     }
 
-    public async void Send(IPeer peer, ServerProtoMsg message)
+    public async void Send(IPeer peer, byte[] data)
     {
         var wsPeer = (WebSocketPeer)peer;
-        var wsMessage = new WebSocketProtoMsg
-        {
-            Messages = { message }
-        };
-        using var memStream = new MemoryStream();
-        wsMessage.WriteTo(memStream);
-        await _ws.SendAsync(wsPeer.Guid,  memStream.ToArray());
+        await _ws.SendAsync(wsPeer.Guid,  data);
     }
     
-    public async void Broadcast(ServerProtoMsg message)
+    public async void Broadcast(byte[] data)
     {
-        var wsMessage = new WebSocketProtoMsg
-        {
-            Messages = { message }
-        };
-        using var memStream = new MemoryStream();
-        wsMessage.WriteTo(memStream);
         var sendTasks = new List<Task>();
         foreach (var peerGuid in _peers.Keys)
         {
-            var sendTask = _ws.SendAsync(peerGuid, memStream.ToArray());
+            var sendTask = _ws.SendAsync(peerGuid, data);
             sendTasks.Add(sendTask);
         }
         await Task.WhenAll(sendTasks);
@@ -72,11 +58,7 @@ public class WebSocketServer : INetworkServer
     {
         var clientGuid = e.Client.Guid;
         var peer = _peers[clientGuid];
-        var wsMessage = WebSocketProtoMsg.Parser.ParseFrom(e.Data.ToArray());
-        foreach (var serverMessage in wsMessage.Messages)
-        {
-            OnPeerMessage?.Invoke(peer, serverMessage);   
-        }
+        OnPeerMessage?.Invoke(peer, e.Data.ToArray());
     }
 
     private void ClientDisconnected(object? sender, DisconnectionEventArgs e)

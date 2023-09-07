@@ -1,10 +1,6 @@
 ﻿using Arch.Core;
-using VojnushkaGameServer.Domain.Avatar;
-using VojnushkaGameServer.Domain.PingPong;
-using VojnushkaGameServer.Domain.SessionSnapshot;
 using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
-using VojnushkaProto.Core;
 
 namespace VojnushkaGameServer.Core;
 
@@ -23,11 +19,7 @@ public class ServerWorld : IServerWorld, IDisposable
 
     public ServerWorld(ILogger logger)
     {
-        RegisterSystem(new PingPongSystem(logger));
-        RegisterSystem(new CreateAvatarSystem());
-        RegisterSystem(new AvatarSyncSystem());
-        RegisterSystem(new AvatarsSnapshotSystem());
-        RegisterSystem(new SessionSnapshotSystem());
+        // Systems registration
     }
     
     public void Start()
@@ -81,13 +73,13 @@ public class ServerWorld : IServerWorld, IDisposable
         _peerToEntityRefMap.Add(peer, entityRef);
     }
 
-    public void AddPeerMessage(IPeer peer, ServerProtoMsg message)
+    public void AddPeerMessage(IPeer peer, byte[] data)
     {
         var peerEntityRef = _peerToEntityRefMap[peer];
         var peerMessage = new NetPeerMessage
         {
             EntityRef = peerEntityRef,
-            Message = message
+            Data = data
         };
         _peerMessageQueue.Enqueue(peerMessage);
     }
@@ -138,7 +130,7 @@ public class ServerWorld : IServerWorld, IDisposable
         
         _world.Query(in requestQuery, (ref NetBroadcastRequest netBroadcastRequest) =>
         {
-            BroadcastRequest?.Invoke(netBroadcastRequest.Message);
+            BroadcastRequest?.Invoke(netBroadcastRequest.Data);
         });
         
         _world.Destroy(requestQuery);
@@ -154,7 +146,7 @@ public class ServerWorld : IServerWorld, IDisposable
         _world.Query(in requestQuery, (ref NetPeerRequest netRequest) =>
         {
             var netRequestEntityRef = netRequest.EntityRef;
-            var netRequestMessage = netRequest.Message;
+            var netRequestData = netRequest.Data;
             
             _world.Query(in peerQuery, (in Entity netPeerEntity) =>
             {
@@ -165,7 +157,7 @@ public class ServerWorld : IServerWorld, IDisposable
 
                 if (_entityRefToPeerMap.TryGetValue(netRequestEntityRef, out var peer))
                 {
-                    PeerRequest?.Invoke(peer, netRequestMessage);
+                    PeerRequest?.Invoke(peer, netRequestData);
                 }
             });
         });

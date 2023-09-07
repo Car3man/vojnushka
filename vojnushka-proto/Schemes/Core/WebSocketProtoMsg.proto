@@ -1,6 +1,0 @@
-﻿package VojnushkaProto.Core;
-import "ServerProtoMsg.proto";
-
-message WebSocketProtoMsg {
-  repeated ServerProtoMsg messages = 1;
-}

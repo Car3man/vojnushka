@@ -1,5 +1,0 @@
-package VojnushkaProto;
-
-message GreetingProtoMsg {
-  required int32 Id = 1;
-}

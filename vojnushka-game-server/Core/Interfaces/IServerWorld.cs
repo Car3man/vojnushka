@@ -1,5 +1,4 @@
 ﻿using VojnushkaGameServer.Network;
-using VojnushkaProto.Core;
 
 namespace VojnushkaGameServer.Core;
 
@@ -11,9 +10,9 @@ public interface IServerWorld
     void Stop();
     void Tick(float deltaTime);
     void AddPeer(IPeer peer);
-    void AddPeerMessage(IPeer peer, ServerProtoMsg message);
+    void AddPeerMessage(IPeer peer, byte[] data);
     void RemovePeer(IPeer peer);
 }
 
-public delegate void ServerWorldBroadcastRequestDelegate(ServerProtoMsg message);
-public delegate void ServerWorldPeerRequestDelegate(IPeer peer, ServerProtoMsg message);
+public delegate void ServerWorldBroadcastRequestDelegate(byte[] data);
+public delegate void ServerWorldPeerRequestDelegate(IPeer peer, byte[] data);

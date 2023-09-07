@@ -1,8 +1,0 @@
-package VojnushkaProto.Avatar;
-import "Common/Vector3ProtoMsg.proto";
-
-message AvatarSyncProtoMsg {
-  required int32 id = 1;
-  required Common.Vector3ProtoMsg position = 2;
-  required Common.Vector3ProtoMsg rotation = 3;
-}

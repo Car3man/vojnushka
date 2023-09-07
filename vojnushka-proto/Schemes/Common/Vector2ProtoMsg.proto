@@ -1,6 +1,0 @@
-﻿package VojnushkaProto.Common;
-
-message Vector2ProtoMsg {
-  required float x = 1;
-  required float y = 2;
-}

@@ -27,8 +27,5 @@
     <PackageReference Include="Autofac" Version="7.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\vojnushka-proto\vojnushka-proto.csproj" />
-  </ItemGroup>
 
 </Project>

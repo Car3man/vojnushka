@@ -1,7 +1,5 @@
 ﻿using Autofac;
 using VojnushkaGameServer.Core;
-using VojnushkaGameServer.Domain;
-using VojnushkaGameServer.Domain.PingPong;
 using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
 using VojnushkaGameServer.WebSocketNetwork;

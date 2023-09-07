@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using Google.Protobuf;
 using NativeWebSocket;
 using UnityEngine;
 using Vojnushka.Network;
-using VojnushkaProto.Core;
 
 namespace Vojnushka.WebSocketNetwork
 {
@@ -12,9 +9,7 @@ namespace Vojnushka.WebSocketNetwork
     {
         private bool _tryToConnect;
         private WebSocket _webSocket;
-        private readonly Queue<ServerProtoMsg> _sendQueue = new();
-
-        private const int MaxMessageSize = 4096;
+        private readonly Queue<byte[]> _sendQueue = new();
 
         public bool Connected { get; private set; }
         
@@ -38,9 +33,9 @@ namespace Vojnushka.WebSocketNetwork
             await _webSocket.Connect();
         }
 
-        public void Send(ServerProtoMsg serverMessage)
+        public void Send(byte[] data)
         {
-            _sendQueue.Enqueue(serverMessage);
+            _sendQueue.Enqueue(data);
         }
 
         public async void Disconnect()
@@ -62,11 +57,7 @@ namespace Vojnushka.WebSocketNetwork
 
         private void OnSocketMessage(byte[] data)
         {
-            var wsMessage = WebSocketProtoMsg.Parser.ParseFrom(data);
-            foreach (var serverMessage in wsMessage.Messages)
-            {
-                OnMessage?.Invoke(serverMessage);   
-            }
+            OnMessage?.Invoke(data);
         }
 
         private void OnSocketError(string errorMsg)
@@ -94,24 +85,11 @@ namespace Vojnushka.WebSocketNetwork
             {
                 return;
             }
-
-            var wsMessage = new WebSocketProtoMsg();
-            var currBatchSize = 0;
             
             while (_sendQueue.Count > 0)
             {
-                var message = _sendQueue.Peek();
-                var messageSize = message.CalculateSize();
-                if (currBatchSize + messageSize >= MaxMessageSize)
-                {
-                    break;
-                }
-                wsMessage.Messages.Add(_sendQueue.Dequeue());
+                _webSocket.Send(_sendQueue.Dequeue());
             }
-
-            using var memStream = new MemoryStream();
-            wsMessage.WriteTo(memStream);
-            _webSocket.Send(memStream.ToArray());
         }
 
         private void Update()

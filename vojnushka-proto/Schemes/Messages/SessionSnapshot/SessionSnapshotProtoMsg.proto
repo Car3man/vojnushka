@@ -1,6 +1,0 @@
-package VojnushkaProto.SessionSnapshot;
-import "Avatar/AvatarsSnapshotProtoMsg.proto";
-
-message SessionSnapshotProtoMsg {
-  optional Avatar.AvatarsSnapshotProtoMsg avatars = 1;
-}

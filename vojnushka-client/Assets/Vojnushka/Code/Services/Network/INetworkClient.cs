@@ -1,6 +1,4 @@
-﻿using VojnushkaProto.Core;
-
-namespace Vojnushka.Network
+﻿namespace Vojnushka.Network
 {
     public interface INetworkClient
     {
@@ -9,11 +7,11 @@ namespace Vojnushka.Network
         event MessageDelegate OnMessage;
         event DisconnectDelegate OnDisconnect;
         void Connect(string query);
-        void Send(ServerProtoMsg serverMessage);
+        void Send(byte[] data);
         void Disconnect();
     }
     
     public delegate void ConnectDelegate();
-    public delegate void MessageDelegate(ServerProtoMsg message);
+    public delegate void MessageDelegate(byte[] data);
     public delegate void DisconnectDelegate();
 }

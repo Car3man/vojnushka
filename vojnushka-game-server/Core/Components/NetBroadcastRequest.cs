@@ -1,8 +1,6 @@
-﻿using VojnushkaProto.Core;
-
-namespace VojnushkaGameServer.Core;
+﻿namespace VojnushkaGameServer.Core;
 
 public struct NetBroadcastRequest
 {
-    public ServerProtoMsg Message;
+    public byte[] Data;
 }

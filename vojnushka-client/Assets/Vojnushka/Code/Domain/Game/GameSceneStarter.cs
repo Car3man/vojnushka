@@ -1,10 +1,6 @@
 ﻿using UnityEngine;
 using Vojnushka.Infrastructure;
 using Vojnushka.Network;
-using VojnushkaProto;
-using VojnushkaProto.Core;
-using VojnushkaProto.PingPong;
-using VojnushkaProto.Utility;
 
 namespace Vojnushka.Game
 {
@@ -35,33 +31,11 @@ namespace Vojnushka.Game
         private void OnConnect()
         {
             Debug.Log("OnConnect");
-
-            var pingMessage = new PingProtoMsg()
-            {
-                Message = "Hello server!"
-            };
-
-            _networkClient.Send(new ServerProtoMsg
-            {
-                Type = ServerProtoMsgType.Ping,
-                Data = MessageUtility.MessageToByteString(pingMessage)
-            });
         }
 
-        private void OnMessage(ServerProtoMsg message)
+        private void OnMessage(byte[] data)
         {
-            switch (message.Type)
-            {
-                case ServerProtoMsgType.Pong:
-                    var pongMessage = PongProtoMsg.Parser.ParseFrom(message.Data);
-                    Debug.Log($"Pong from server: {pongMessage.Message}");
-                    break;
-                case ServerProtoMsgType.Greeting:
-                    var greetingMessage = GreetingProtoMsg.Parser.ParseFrom(message.Data);
-                    Debug.Log($"Greetings from server, my id is {greetingMessage.Id}");
-                    break;
-
-            }
+            
         }
 
         private void OnDisconnect()
