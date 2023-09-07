@@ -1,0 +1,9 @@
+﻿package VojnushkaProto.Avatar;
+import "Common/Vector3ProtoMsg.proto";
+
+message AvatarsSnapshotProtoMsg {
+  repeated int32 ownerId = 1;
+  repeated int32 id = 2;
+  repeated Common.Vector3ProtoMsg positions = 3;
+  repeated Common.Vector3ProtoMsg rotations = 4;
+}

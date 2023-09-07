@@ -1,7 +1,10 @@
 ﻿using Arch.Core;
+using VojnushkaGameServer.Domain.Avatar;
 using VojnushkaGameServer.Domain.PingPong;
+using VojnushkaGameServer.Domain.SessionSnapshot;
 using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
+using VojnushkaProto.Core;
 
 namespace VojnushkaGameServer.Core;
 
@@ -15,11 +18,16 @@ public class ServerWorld : IServerWorld, IDisposable
     private readonly Dictionary<IPeer, EntityReference> _peerToEntityRefMap = new();
     private readonly Queue<NetPeerMessage> _peerMessageQueue = new();
 
+    public event ServerWorldBroadcastRequestDelegate? BroadcastRequest;
     public event ServerWorldPeerRequestDelegate? PeerRequest;
 
     public ServerWorld(ILogger logger)
     {
         RegisterSystem(new PingPongSystem(logger));
+        RegisterSystem(new CreateAvatarSystem());
+        RegisterSystem(new AvatarSyncSystem());
+        RegisterSystem(new AvatarsSnapshotSystem());
+        RegisterSystem(new SessionSnapshotSystem());
     }
     
     public void Start()
@@ -40,7 +48,9 @@ public class ServerWorld : IServerWorld, IDisposable
         }
 
         CleanUpPeerMessages();
-        SendPeerRequests();
+
+        ProcessBroadcastRequests();
+        ProcessPeerRequests();
     }
 
     public void Stop()
@@ -58,7 +68,8 @@ public class ServerWorld : IServerWorld, IDisposable
         
         _world.Add(entity, new NetPeer
         {
-            Id = peer.Id
+            Id = peer.Id,
+            IdNumber = peer.IdNumber
         });
         
         foreach (var system in _peerEventSystems)
@@ -70,7 +81,7 @@ public class ServerWorld : IServerWorld, IDisposable
         _peerToEntityRefMap.Add(peer, entityRef);
     }
 
-    public void AddPeerMessage(IPeer peer, ServerMessage message)
+    public void AddPeerMessage(IPeer peer, ServerProtoMsg message)
     {
         var peerEntityRef = _peerToEntityRefMap[peer];
         var peerMessage = new NetPeerMessage
@@ -96,7 +107,7 @@ public class ServerWorld : IServerWorld, IDisposable
         
         foreach (var system in _peerEventSystems)
         {
-            system.OnPeerConnect(_world, _peerToEntityRefMap[peer]);
+            system.OnPeerDisconnect(_world, _peerToEntityRefMap[peer]);
         }
         
         _entityRefToPeerMap.Remove(_peerToEntityRefMap[peer]);
@@ -120,7 +131,20 @@ public class ServerWorld : IServerWorld, IDisposable
         _world.Destroy(query);
     }
 
-    private void SendPeerRequests()
+    private void ProcessBroadcastRequests()
+    {
+        var requestQuery = new QueryDescription()
+            .WithAll<NetBroadcastRequest>();
+        
+        _world.Query(in requestQuery, (ref NetBroadcastRequest netBroadcastRequest) =>
+        {
+            BroadcastRequest?.Invoke(netBroadcastRequest.Message);
+        });
+        
+        _world.Destroy(requestQuery);
+    }
+
+    private void ProcessPeerRequests()
     {
         var requestQuery = new QueryDescription()
             .WithAll<NetPeerRequest>();

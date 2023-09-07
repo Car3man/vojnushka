@@ -1,9 +1,10 @@
 ﻿using Arch.Core;
+using VojnushkaProto.Core;
 
 namespace VojnushkaGameServer.Core;
 
 public struct NetPeerMessage
 {
     public EntityReference EntityRef;
-    public ServerMessage Message;
+    public ServerProtoMsg Message;
 }

@@ -1,9 +1,0 @@
-﻿enum ServerMessageType {
-  Ping = 0;
-  Pong = 1;
-}
-
-message ServerMessage {
-  required ServerMessageType type = 1;
-  required bytes data = 2;
-}

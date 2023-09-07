@@ -1,0 +1,5 @@
+﻿package VojnushkaProto.PingPong;
+
+message PongProtoMsg {
+  required string message = 1;
+}

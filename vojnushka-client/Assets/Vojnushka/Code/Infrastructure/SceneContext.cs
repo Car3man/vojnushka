@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
@@ -9,7 +10,8 @@ namespace Vojnushka.Infrastructure
     [DefaultExecutionOrder(-1000)]
     public abstract class SceneContext : MonoBehaviour, IAsyncDisposable
     {
-        [SerializeField] protected bool injectToGameObjects;
+        [SerializeField] protected bool injectToGameObjects = true;
+        private readonly List<IDisposable> _gameObjectsToDispose = new();
         
         protected ILifetimeScope Scope { get; private set; }
 
@@ -51,6 +53,7 @@ namespace Vojnushka.Infrastructure
             var methods = monoBehaviour.GetType().GetMethods()
                 .Where(m => m.GetCustomAttributes(typeof(InjectAttribute), false).Length > 0)
                 .ToArray();
+            
             foreach (var method in methods)
             {
                 var parameters = method.GetParameters();
@@ -62,6 +65,11 @@ namespace Vojnushka.Infrastructure
                 }
                 method.Invoke(monoBehaviour, arguments);
             }
+
+            if (methods.Length > 0 && monoBehaviour is IDisposable disposable)
+            {
+                _gameObjectsToDispose.Add(disposable);
+            }
         }
 
         protected virtual void Run()
@@ -70,13 +78,26 @@ namespace Vojnushka.Infrastructure
 
         protected abstract void RegisterDependencies(ContainerBuilder builder);
 
+        private void DisposeGameObjects()
+        {
+            foreach (var disposable in _gameObjectsToDispose)
+            {
+                disposable.Dispose();
+            }
+            
+            _gameObjectsToDispose.Clear();
+        }
+        
         public void Dispose()
         {
+            DisposeGameObjects();
             Scope?.Dispose();
         }
 
         public async ValueTask DisposeAsync()
         {
+            DisposeGameObjects();
+            
             if (Scope != null)
             {
                 await Scope.DisposeAsync();

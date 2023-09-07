@@ -1,3 +1,0 @@
-﻿message PingMessage {
-  required string message = 1;
-}

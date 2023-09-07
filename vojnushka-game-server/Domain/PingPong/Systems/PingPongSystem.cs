@@ -1,7 +1,9 @@
 ﻿using Arch.Core;
 using VojnushkaGameServer.Core;
-using VojnushkaGameServer.Core.Utility;
 using VojnushkaGameServer.Logger;
+using VojnushkaProto.Core;
+using VojnushkaProto.PingPong;
+using VojnushkaProto.Utility;
 
 namespace VojnushkaGameServer.Domain.PingPong;
 
@@ -26,15 +28,15 @@ public class PingPongSystem : ITickSystem
 
         world.Query(pingQuery, (ref NetPeerMessage netPeerMessage) =>
         {
-            if (netPeerMessage.Message.Type != ServerMessageType.Ping)
+            if (netPeerMessage.Message.Type != ServerProtoMsgType.Ping)
             {
                 return;
             }
 
-            var pingMessage = PingMessage.Parser.ParseFrom(netPeerMessage.Message.Data);
+            var pingMessage = PingProtoMsg.Parser.ParseFrom(netPeerMessage.Message.Data);
             _logger.Log($"Ping message: {pingMessage.Message}");
             
-            var pongMessage = new PongMessage
+            var pongMessage = new PongProtoMsg
             {
                 Message = $"Hello from server: {pingMessage.Message}"
             };
@@ -42,9 +44,9 @@ public class PingPongSystem : ITickSystem
             world.Add(requestEntity, new NetPeerRequest
             {
                 EntityRef = netPeerMessage.EntityRef,
-                Message = new ServerMessage
+                Message = new ServerProtoMsg
                 {
-                    Type = ServerMessageType.Pong,
+                    Type = ServerProtoMsgType.Pong,
                     Data = MessageUtility.MessageToByteString(pongMessage)
                 }
             });

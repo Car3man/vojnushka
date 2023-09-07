@@ -1,0 +1,14 @@
+﻿package VojnushkaProto.Core;
+
+enum ServerProtoMsgType {
+  PING = 0;
+  PONG = 1;
+  GREETING = 2;
+  SESSION_SNAPSHOT = 3;
+  AVATAR_SYNC = 4;
+}
+
+message ServerProtoMsg {
+  required ServerProtoMsgType type = 1;
+  required bytes data = 2;
+}

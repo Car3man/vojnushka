@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
-using Vojnushka.Domain;
 
 namespace Vojnushka.Infrastructure
 {

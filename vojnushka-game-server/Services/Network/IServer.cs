@@ -1,10 +1,12 @@
-﻿namespace VojnushkaGameServer.Network;
+﻿using VojnushkaProto.Core;
+
+namespace VojnushkaGameServer.Network;
 
 public interface IServer
 {
-    void Send(IPeer peer, ServerMessage message);
-    void Broadcast(ServerMessage message);
+    void Send(IPeer peer, ServerProtoMsg message);
+    void Broadcast(ServerProtoMsg message);
     void OnPeerConnect(IPeer peer);
-    void OnPeerMessage(IPeer peer, ServerMessage message);
+    void OnPeerMessage(IPeer peer, ServerProtoMsg message);
     void OnPeerDisconnect(IPeer peer);
 }

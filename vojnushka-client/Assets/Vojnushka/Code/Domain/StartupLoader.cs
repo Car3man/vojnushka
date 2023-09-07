@@ -1,6 +1,6 @@
 ﻿using UnityEngine.SceneManagement;
 
-namespace Vojnushka.Domain
+namespace Vojnushka
 {
     public class StartupLoader
     {

@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using VojnushkaGameServer.Network;
+using VojnushkaProto.Core;
 using WatsonWebsocket;
 
 namespace VojnushkaGameServer.WebSocketNetwork;
@@ -8,6 +9,7 @@ public class WebSocketServer : INetworkServer
 {
     private readonly WatsonWsServer _ws = new();
     private readonly Dictionary<Guid, WebSocketPeer> _peers = new();
+    private int _peerCounter;
 
     public event PeerConnectDelegate? OnPeerConnect;
     public event PeerMessageDelegate? OnPeerMessage;
@@ -29,10 +31,10 @@ public class WebSocketServer : INetworkServer
         _ws.Stop();
     }
 
-    public async void Send(IPeer peer, ServerMessage message)
+    public async void Send(IPeer peer, ServerProtoMsg message)
     {
         var wsPeer = (WebSocketPeer)peer;
-        var wsMessage = new WebSocketMessage
+        var wsMessage = new WebSocketProtoMsg
         {
             Messages = { message }
         };
@@ -41,9 +43,9 @@ public class WebSocketServer : INetworkServer
         await _ws.SendAsync(wsPeer.Guid,  memStream.ToArray());
     }
     
-    public async void Broadcast(ServerMessage message)
+    public async void Broadcast(ServerProtoMsg message)
     {
-        var wsMessage = new WebSocketMessage
+        var wsMessage = new WebSocketProtoMsg
         {
             Messages = { message }
         };
@@ -61,7 +63,7 @@ public class WebSocketServer : INetworkServer
     private void ClientConnected(object? sender, ConnectionEventArgs e)
     {
         var client = e.Client;
-        var peer = new WebSocketPeer(client.Guid, client.IpPort);
+        var peer = new WebSocketPeer(client.Guid, client.IpPort, _peerCounter++);
         _peers.Add(client.Guid, peer);
         OnPeerConnect?.Invoke(peer);
     }
@@ -70,8 +72,11 @@ public class WebSocketServer : INetworkServer
     {
         var clientGuid = e.Client.Guid;
         var peer = _peers[clientGuid];
-        var message = WebSocketMessage.Parser.ParseFrom(e.Data.ToArray());
-        OnPeerMessage?.Invoke(peer, message.Messages[0]);
+        var wsMessage = WebSocketProtoMsg.Parser.ParseFrom(e.Data.ToArray());
+        foreach (var serverMessage in wsMessage.Messages)
+        {
+            OnPeerMessage?.Invoke(peer, serverMessage);   
+        }
     }
 
     private void ClientDisconnected(object? sender, DisconnectionEventArgs e)

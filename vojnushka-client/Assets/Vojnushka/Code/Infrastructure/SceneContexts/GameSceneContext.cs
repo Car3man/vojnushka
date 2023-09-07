@@ -1,4 +1,7 @@
 ﻿using Autofac;
+using UnityEngine;
+using Vojnushka.Network;
+using Vojnushka.WebSocketNetwork;
 
 namespace Vojnushka.Infrastructure
 {
@@ -6,7 +9,16 @@ namespace Vojnushka.Infrastructure
     {
         protected override void RegisterDependencies(ContainerBuilder builder)
         {
-            builder.RegisterInstance("Hello mono!");
+            RegisterGameNetwork(builder);
+        }
+
+        private void RegisterGameNetwork(ContainerBuilder builder)
+        {
+            var webSocketClientObject = new GameObject(nameof(WebSocketClient));
+            var webSocketClient = webSocketClientObject.AddComponent<WebSocketClient>();
+            builder
+                .RegisterInstance(webSocketClient)
+                .As<INetworkClient>();
         }
     }
 }

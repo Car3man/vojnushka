@@ -1,5 +1,8 @@
 ﻿using VojnushkaGameServer.Logger;
 using VojnushkaGameServer.Network;
+using VojnushkaProto;
+using VojnushkaProto.Core;
+using VojnushkaProto.Utility;
 
 namespace VojnushkaGameServer.Core;
 
@@ -28,6 +31,7 @@ public class Server : IServer, IDisposable
         _network.OnPeerConnect += OnPeerConnect;
         _network.OnPeerMessage += OnPeerMessage;
         _network.OnPeerDisconnect += OnPeerDisconnect;
+        _world.BroadcastRequest += OnWorldBroadcastRequest;
         _world.PeerRequest += OnWorldPeerRequest;
     }
 
@@ -36,6 +40,7 @@ public class Server : IServer, IDisposable
         _network.OnPeerConnect -= OnPeerConnect;
         _network.OnPeerMessage -= OnPeerMessage;
         _network.OnPeerDisconnect -= OnPeerDisconnect;
+        _world.BroadcastRequest -= OnWorldBroadcastRequest;
         _world.PeerRequest -= OnWorldPeerRequest;
     }
     
@@ -62,12 +67,12 @@ public class Server : IServer, IDisposable
         _world.Stop();
     }
 
-    public void Send(IPeer peer, ServerMessage message)
+    public void Send(IPeer peer, ServerProtoMsg message)
     {
         _network.Send(peer, message);
     }
 
-    public void Broadcast(ServerMessage message)
+    public void Broadcast(ServerProtoMsg message)
     {
         _network.Broadcast(message);
     }
@@ -75,11 +80,13 @@ public class Server : IServer, IDisposable
     public void OnPeerConnect(IPeer peer)
     {
         _logger.Log($"Peer connected, guid: {peer.Id}");
+
+        GreetPeer(peer);
         
         _world.AddPeer(peer);
     }
 
-    public void OnPeerMessage(IPeer peer, ServerMessage message)
+    public void OnPeerMessage(IPeer peer, ServerProtoMsg message)
     {
         _logger.Log($"Peer message, guid: {peer.Id}");
         
@@ -92,12 +99,32 @@ public class Server : IServer, IDisposable
         
         _world.RemovePeer(peer);
     }
+
+    private void OnWorldBroadcastRequest(ServerProtoMsg message)
+    {
+        // _logger.Log("Broadcast world request");
+        
+        Broadcast(message);
+    }
     
-    private void OnWorldPeerRequest(IPeer peer, ServerMessage message)
+    private void OnWorldPeerRequest(IPeer peer, ServerProtoMsg message)
     {
         _logger.Log($"Peer world request, guid: {peer.Id}");
         
         Send(peer, message);
+    }
+
+    private void GreetPeer(IPeer peer)
+    {
+        var serverMessage = new ServerProtoMsg
+        {
+            Type = ServerProtoMsgType.Greeting,
+            Data = MessageUtility.MessageToByteString(new GreetingProtoMsg
+            {
+                Id = peer.IdNumber
+            })
+        };
+        Send(peer, serverMessage);
     }
 
     private bool ShouldTerminate()

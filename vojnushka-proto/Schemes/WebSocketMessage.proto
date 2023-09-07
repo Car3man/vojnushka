@@ -1,5 +1,0 @@
-﻿import "ServerMessage.proto";
-
-message WebSocketMessage {
-  repeated ServerMessage messages = 1;
-}

@@ -9,11 +9,14 @@ public class WebSocketPeer : IPeer
 
     public string Id { get; set; }
     
+    public int IdNumber { get; set; }
+    
     public IPEndPoint EndPoint { get; set; }
 
-    public WebSocketPeer(Guid guid, string ipPort)
+    public WebSocketPeer(Guid guid, string ipPort, int number)
     {
         Guid = guid;
+        IdNumber = number;
         Id = Guid.ToString();
         EndPoint = IPEndPoint.Parse(ConvertToIpV4(ipPort));
     }
