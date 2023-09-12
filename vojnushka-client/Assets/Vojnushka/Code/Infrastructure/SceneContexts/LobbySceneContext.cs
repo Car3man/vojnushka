@@ -4,7 +4,7 @@ namespace Vojnushka.Infrastructure
 {
     public class LobbySceneContext : SceneContext
     {
-        protected override void RegisterDependencies(ContainerBuilder builder)
+        protected override void RegisterDependencies(ContainerBuilder containerBuilder)
         {
             
         }

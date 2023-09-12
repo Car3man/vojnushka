@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Autofac;
+using Vojnushka.EditorLogger;
+using VojnushkaShared.Logger;
 
 namespace Vojnushka.Infrastructure
 {
@@ -13,17 +15,24 @@ namespace Vojnushka.Infrastructure
             Container.Resolve<StartupLoader>();
         }
         
-        public IContainer RegisterDependencies()
+        public void RegisterDependencies()
         {
-            var builder = new ContainerBuilder();
-            RegisterDependencies(builder);
-            Container = builder.Build();
-            return Container;
+            var containerBuilder = new ContainerBuilder();
+            RegisterLogger(containerBuilder);
+            RegisterStartupLoader(containerBuilder);
+            Container = containerBuilder.Build();
         }
 
-        private void RegisterDependencies(ContainerBuilder builder)
+        private void RegisterLogger(ContainerBuilder containerBuilder)
         {
-            builder
+            containerBuilder
+                .RegisterType<DebugLoggerAdapter>()
+                .As<ILogger>();
+        }
+
+        private void RegisterStartupLoader(ContainerBuilder containerBuilder)
+        {
+            containerBuilder
                 .RegisterType<StartupLoader>()
                 .InstancePerLifetimeScope();
         }

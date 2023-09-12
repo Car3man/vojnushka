@@ -5,7 +5,9 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vojnushka-game-server", "vojnushka-game-server\vojnushka-game-server.csproj", "{05218E6E-5783-4C71-A04D-D2253D8B3F84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vojnushka-client-deps", "vojnushka-client-deps\vojnushka-client-deps.csproj", "{940317AC-A62E-4467-A745-EC9008E0FF45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vojnushka-client-deps", "vojnushka-client-deps\vojnushka-client-deps.csproj", "{940317AC-A62E-4467-A745-EC9008E0FF45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vojnushka-shared", "vojnushka-shared\vojnushka-shared.csproj", "{2A73F48D-886E-487D-8973-CCE70C2739C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{940317AC-A62E-4467-A745-EC9008E0FF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{940317AC-A62E-4467-A745-EC9008E0FF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{940317AC-A62E-4467-A745-EC9008E0FF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A73F48D-886E-487D-8973-CCE70C2739C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A73F48D-886E-487D-8973-CCE70C2739C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A73F48D-886E-487D-8973-CCE70C2739C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A73F48D-886E-487D-8973-CCE70C2739C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

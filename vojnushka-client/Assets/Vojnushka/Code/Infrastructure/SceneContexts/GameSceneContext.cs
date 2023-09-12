@@ -1,24 +1,41 @@
 ﻿using Autofac;
 using UnityEngine;
-using Vojnushka.Network;
-using Vojnushka.WebSocketNetwork;
+using Vojnushka.Game;
+using Vojnushka.WebSocket;
+using VojnushkaShared.Net;
 
 namespace Vojnushka.Infrastructure
 {
     public class GameSceneContext : SceneContext
     {
-        protected override void RegisterDependencies(ContainerBuilder builder)
+        [SerializeField] private Mesh movingCubeMesh;
+        [SerializeField] private Material movingCubeMaterial;
+        
+        protected override void RegisterDependencies(ContainerBuilder containerBuilder)
         {
-            RegisterGameNetwork(builder);
+            RegisterNetwork(containerBuilder);
+            RegisterGameWorld(containerBuilder);
         }
 
-        private void RegisterGameNetwork(ContainerBuilder builder)
+        private void RegisterNetwork(ContainerBuilder containerBuilder)
         {
-            var webSocketClientObject = new GameObject(nameof(WebSocketClient));
-            var webSocketClient = webSocketClientObject.AddComponent<WebSocketClient>();
-            builder
-                .RegisterInstance(webSocketClient)
-                .As<INetworkClient>();
+            containerBuilder
+                .RegisterInstance(new NetConnectConfig("127.0.0.1", 6969))
+                .As<INetConnectConfig>()
+                .SingleInstance();
+            
+            var wsClientObject = new GameObject(nameof(WebSocketClient));
+            var wsClient = wsClientObject.AddComponent<WebSocketClient>();
+            containerBuilder
+                .RegisterInstance(wsClient)
+                .As<INetClient>();
+        }
+
+        private void RegisterGameWorld(ContainerBuilder containerBuilder)
+        {
+            containerBuilder.RegisterInstance(movingCubeMesh);
+            containerBuilder.RegisterInstance(movingCubeMaterial);
+            containerBuilder.RegisterType<GameWorld>();
         }
     }
 }

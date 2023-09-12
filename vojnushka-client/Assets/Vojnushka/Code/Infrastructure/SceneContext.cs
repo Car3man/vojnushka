@@ -76,7 +76,7 @@ namespace Vojnushka.Infrastructure
         {
         }
 
-        protected abstract void RegisterDependencies(ContainerBuilder builder);
+        protected abstract void RegisterDependencies(ContainerBuilder containerBuilder);
 
         private void DisposeGameObjects()
         {

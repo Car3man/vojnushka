@@ -13,14 +13,18 @@
 
     <ItemGroup>
       <PackageReference Include="Arch" Version="1.2.6" />
+      <PackageReference Include="Arch.System.SourceGenerator" Version="1.1.0" />
       <PackageReference Include="Autofac" Version="7.1.0" />
-      <PackageReference Include="Google.Protobuf" Version="3.24.2" />
       <PackageReference Include="WatsonWebsocket" Version="4.0.11" />
-    <ItemGroup>
-      <Folder Include="Domain\" />
     </ItemGroup>
 
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\vojnushka-shared\vojnushka-shared.csproj" />
     </ItemGroup>
+
+
 
 
 

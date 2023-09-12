@@ -28,4 +28,14 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <ProjectReference Include="..\vojnushka-shared\vojnushka-shared.csproj" />
+  </ItemGroup>
+
+
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Exec Command="call DeleteMessagePackDLL.bat $(ProjectDir)" />
+    <Exec Command="call MessagePackCodeGen.bat $(ProjectDir)" />
+  </Target>
+
 </Project>
