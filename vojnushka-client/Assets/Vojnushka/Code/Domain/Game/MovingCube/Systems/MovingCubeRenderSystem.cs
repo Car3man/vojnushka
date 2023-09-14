@@ -1,7 +1,9 @@
 ﻿using Arch.Core;
 using Arch.System;
 using UnityEngine;
+using Vojnushka.VectorConverters;
 using VojnushkaShared.Domain.MovingCube;
+using VojnushkaShared.NetEcs.Transform;
 
 namespace Vojnushka.Game.MovingCube.Systems
 {
@@ -11,7 +13,7 @@ namespace Vojnushka.Game.MovingCube.Systems
         private readonly Material _material;
 
         private readonly QueryDescription _movingCubeQuery = new QueryDescription()
-            .WithAll<MovingCubeComponent>();
+            .WithAll<NetTransform, MovingCubeComponent>();
 
         public MovingCubeRenderSystem(World world, Mesh mesh, Material material) : base(world)
         {
@@ -21,10 +23,11 @@ namespace Vojnushka.Game.MovingCube.Systems
 
         public override void Update(in float deltaTime)
         {
-            World.Query(in _movingCubeQuery, (ref MovingCubeComponent movingCube) =>
+            World.Query(in _movingCubeQuery, (ref NetTransform netTransform) =>
             {
+                var position = netTransform.InterpolatedPosition.GetUnityVector();
                 var matrix = Matrix4x4.TRS(
-                    new Vector3(movingCube.X, movingCube.Y, 0),
+                    position,
                     Quaternion.identity,
                     Vector3.one
                 );

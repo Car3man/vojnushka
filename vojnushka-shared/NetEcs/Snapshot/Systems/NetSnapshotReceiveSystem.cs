@@ -7,21 +7,27 @@ using Arch.Core.Extensions;
 using Arch.Core.Utils;
 using Arch.System;
 using MessagePack;
+using VojnushkaShared.Logger;
 using VojnushkaShared.Net;
 using VojnushkaShared.NetEcs.Core;
-using VojnushkaShared.NetEcs.Snapshot.Utility;
+using VojnushkaShared.NetEcs.Transform;
 
 namespace VojnushkaShared.NetEcs.Snapshot
 {
     public class NetSnapshotReceiveSystem : BaseSystem<World, float>
     {
+        private readonly ILogger _logger;
         private readonly INetClient _netClient;
+
+        private SnapshotData? _snapshotQueue;
+        private SnapshotData? _lastSnapshot;
         
         private readonly QueryDescription _netObjectQuery = new QueryDescription()
             .WithAll<NetObject>();
 
-        public NetSnapshotReceiveSystem(World world, INetClient netClient) : base(world)
+        public NetSnapshotReceiveSystem(World world, ILogger logger, INetClient netClient) : base(world)
         {
+            _logger = logger;
             _netClient = netClient;
             _netClient.OnMessage += OnServerMessage;
         }
@@ -31,6 +37,27 @@ namespace VojnushkaShared.NetEcs.Snapshot
             _netClient.OnMessage -= OnServerMessage;
         }
 
+        public override void Update(in float deltaTime)
+        {
+            if (!_snapshotQueue.HasValue)
+            {
+                return;
+            }
+
+            var snapshotData = _snapshotQueue.Value;
+            
+            World.SetNetTick(snapshotData.Tick);
+            World.SetNetLastTickPing((int)(snapshotData.Time - World.GetNetLastTickTime()).TotalMilliseconds);
+            World.SetNetLastTickTime(DateTime.UtcNow);
+            
+            UpdateOrDestroyNetObjects(snapshotData, out var missingObjects);
+            CreateMissingObjects(snapshotData, missingObjects);
+            CreateSnapshotTrail(snapshotData);
+            
+            _lastSnapshot = snapshotData;
+            _snapshotQueue = null;
+        }
+
         private void OnServerMessage(byte[] data)
         {
             if (!TryGetSnapshotMessage(data, out var message))
@@ -38,15 +65,24 @@ namespace VojnushkaShared.NetEcs.Snapshot
                 return;
             }
 
-            var currentTick = World.GetLocalTick();
+            var currentTick = World.GetNetTick();
             var snapshotData = MessagePackSerializer.Deserialize<SnapshotData>(message.RawBytes);
             if (currentTick > snapshotData.Tick)
             {
                 return;
             }
-            
-            UpdateOrDestroyNetObjects(snapshotData, out var missingObjects);
-            CreateMissingObjects(snapshotData, missingObjects);
+
+            _snapshotQueue = snapshotData;
+        }
+
+        private void CreateSnapshotTrail(SnapshotData snapshotData)
+        {
+            var entity = this.World.Create();
+            entity.Add(new NetSnapshotTrail
+            {
+                PrevSnapshot = _lastSnapshot,
+                CurrSnapshot = snapshotData
+            });
         }
 
         private void UpdateOrDestroyNetObjects(SnapshotData snapshotData, out HashSet<int> outMissingObjects)
@@ -121,8 +157,7 @@ namespace VojnushkaShared.NetEcs.Snapshot
                 if (componentInSnapshot != null)
                 {
                     UpdateComponentValues(entityComponent, componentInSnapshot.Values);
-                    entity.RemoveRange(entityComponent.GetType());
-                    entity.Add(entityComponent);
+                    entity.Set(entityComponent);
                 }
                 else
                 {
@@ -155,7 +190,7 @@ namespace VojnushkaShared.NetEcs.Snapshot
                     field => ((KeyAttribute)field.GetCustomAttribute(typeof(KeyAttribute))).IntKey,
                     field => field
                 );
-
+            
             foreach (var componentValue in values)
             {
                 var componentField = componentFields[componentValue.KeyId];

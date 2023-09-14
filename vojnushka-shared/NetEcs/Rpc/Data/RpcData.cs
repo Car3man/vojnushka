@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using MessagePack;
-using VojnushkaShared.NetEcs.Core;
 
 namespace VojnushkaShared.NetEcs.Rpc
 {

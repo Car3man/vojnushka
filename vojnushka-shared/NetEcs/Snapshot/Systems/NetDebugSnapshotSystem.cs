@@ -14,7 +14,7 @@ namespace VojnushkaShared.NetEcs.Snapshot
         private readonly Random _random;
         
         private readonly QueryDescription _netObjectQuery = new QueryDescription()
-            .WithAll<NetObject>();
+            .WithAll<NetObject, NetDebugObject>();
 
         private float _time;
         private float _lastChangeObjectTime;
@@ -38,17 +38,16 @@ namespace VojnushkaShared.NetEcs.Snapshot
             {
                 return;
             }
-            
-            var entity = this.World.Create();
-            var id = 0;
-            var someNumber = _random.Next(0, 1000);
-            entity.Add(new NetObject
+
+            var netObjectEntity = World.CreateNetObject();
+            netObjectEntity.Add(new NetDebugObject
             {
-                Id = id,
-                SomeNumber = someNumber
+                SomeNumber = _random.Next(0, 1000)
             });
             
-            _logger.Log($"[{nameof(NetDebugSnapshotSystem)}] Created NetObject, id - {id}, someNumber - {someNumber}");
+            _logger.Log($"[{nameof(NetDebugSnapshotSystem)}] Created NetObject, " +
+                        $"id - {netObjectEntity.Get<NetObject>().Id}, " +
+                        $"someNumber - {netObjectEntity.Get<NetDebugObject>().SomeNumber}");
         }
 
         public override void Update(in float deltaTime)
@@ -69,14 +68,13 @@ namespace VojnushkaShared.NetEcs.Snapshot
         {
             if (_time - _lastChangeObjectTime >= ChangeObjectInterval)
             {
-                World.Query(in _netObjectQuery, (ref NetObject netObject) =>
+                World.Query(in _netObjectQuery, (ref NetObject netObject, ref NetDebugObject netDebugObject) =>
                 {
-                    var someNumber = _random.Next(0, 1000);
-                    netObject.SomeNumber = someNumber;
+                    netDebugObject.SomeNumber = _random.Next(0, 1000);
                     
                     _logger.Log($"[{nameof(NetDebugSnapshotSystem)}] Changed NetObject, " +
                                 $"id - {netObject.Id}, " +
-                                $"someNumber - {someNumber}");
+                                $"someNumber - {netDebugObject.SomeNumber}");
                 });
 
                 _lastChangeObjectTime = _time;
@@ -95,11 +93,11 @@ namespace VojnushkaShared.NetEcs.Snapshot
         {
             if (_time - _lastObjectWatchTime >= WatchObjectInterval)
             {
-                World.Query(in _netObjectQuery, (ref NetObject netObject) =>
+                World.Query(in _netObjectQuery, (ref NetObject netObject, ref NetDebugObject netDebugObject) =>
                 {
                     _logger.Log($"[{nameof(NetDebugSnapshotSystem)}] Watching the NetObject, " +
                                 $"id - {netObject.Id}, " +
-                                $"someNumber - {netObject.SomeNumber}");
+                                $"someNumber - {netDebugObject.SomeNumber}");
                 });
 
                 _lastObjectWatchTime = _time;

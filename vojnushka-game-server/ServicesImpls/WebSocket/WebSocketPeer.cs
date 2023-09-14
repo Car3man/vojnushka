@@ -7,10 +7,9 @@ namespace VojnushkaGameServer.WebSocket
     {
         public readonly Guid Guid;
 
+        public bool Connected { get; set; }
         public string Id { get; set; }
-    
         public int IdNumber { get; set; }
-    
         public IPEndPoint EndPoint { get; set; }
 
         public WebSocketPeer(Guid guid, string ipPort, int number)

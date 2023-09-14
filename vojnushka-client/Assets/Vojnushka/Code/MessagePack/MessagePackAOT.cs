@@ -2,9 +2,9 @@
 using MessagePack.Resolvers;
 using UnityEngine;
 
-namespace Vojnushka.AOT
+namespace Vojnushka.MessagePack
 {
-    public static class MessagePackStartup
+    public static class MessagePackAOT
     {
         static bool _serializerRegistered;
 
@@ -15,11 +15,12 @@ namespace Vojnushka.AOT
             {
                 StaticCompositeResolver.Instance.Register(
                     GeneratedResolver.Instance,
-                    StandardResolver.Instance
+                    StandardResolver.Instance,
+                    NativeDateTimeResolver.Instance,
+                    VectorResolver.Instance
                 );
 
                 var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
-
                 MessagePackSerializer.DefaultOptions = option;
                 _serializerRegistered = true;
             }

@@ -16,21 +16,21 @@ internal class ServerWorld : IDisposable
     
     public ServerWorld(
         ILogger logger,
-        INetListener listener, INetConnectConfig netConnectConfig)
+        INetListener netListener, INetConnectConfig netConnectConfig)
     {
         _world = World.Create();
         _group = new Group<float>(
-            new NetServerListenSystem(_world, logger, listener, netConnectConfig),
-            new NetTickSystem(_world, true),
-            new NetRpcReceiveSystem(_world, listener),
-            new NetRpcSendSystem(_world, listener),
+            new NetServerListenSystem(_world, logger, netListener, netConnectConfig),
+            new NetTimeSystem(_world, logger, netListener),
+            new NetRpcReceiveSystem(_world, netListener),
+            new NetRpcSendSystem(_world, netListener),
             // -- DEBUG new NetDebugRpcSystem(_world, logger, false, true),
             // -- DEBUG new NetDebugSnapshotSystem(_world, logger, true),
             // Game Logic
             // ----------
             new SpawnAndMoveMovingCubeSystem(_world),
             // ----------
-            new NetSnapshotSendSystem(_world, listener),
+            new NetSnapshotSendSystem(_world, netListener),
             new NetCleanUpReceivedRpcSystem(_world)
         );
     }

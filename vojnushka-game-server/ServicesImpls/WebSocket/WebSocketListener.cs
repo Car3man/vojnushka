@@ -60,7 +60,10 @@ namespace VojnushkaGameServer.WebSocket
         private void ClientConnected(object? sender, ConnectionEventArgs e)
         {
             var client = e.Client;
-            var peer = new WebSocketPeer(client.Guid, client.IpPort, _peerCounter++);
+            var peer = new WebSocketPeer(client.Guid, client.IpPort, _peerCounter++)
+            {
+                Connected = true
+            };
             _peers.Add(client.Guid, peer);
             OnPeerConnect?.Invoke(peer);
         }
@@ -76,6 +79,7 @@ namespace VojnushkaGameServer.WebSocket
         {
             var clientGuid = e.Client.Guid;
             var peer = _peers[clientGuid];
+            peer.Connected = false;
             _peers.Remove(clientGuid);
             OnPeerDisconnect?.Invoke(peer);
         }

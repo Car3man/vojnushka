@@ -14,36 +14,40 @@
 #pragma warning disable SA1403 // File may only contain a single namespace
 #pragma warning disable SA1649 // File name should match first type name
 
-namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc
+namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Core
 {
-    public sealed class NetDebugRpcFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Rpc.NetDebugRpc>
+    public sealed class NetObjectFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Core.NetObject>
     {
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Rpc.NetDebugRpc value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Core.NetObject value, global::MessagePack.MessagePackSerializerOptions options)
         {
-            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
             writer.WriteArrayHeader(1);
-            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Serialize(ref writer, value.Uid, options);
+            writer.Write(value.Id);
         }
 
-        public global::VojnushkaShared.NetEcs.Rpc.NetDebugRpc Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::VojnushkaShared.NetEcs.Core.NetObject Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
-                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
+                return null;
             }
 
             options.Security.DepthStep(ref reader);
-            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var ____result = new global::VojnushkaShared.NetEcs.Rpc.NetDebugRpc();
+            var ____result = new global::VojnushkaShared.NetEcs.Core.NetObject();
 
             for (int i = 0; i < length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        ____result.Uid = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<string>(formatterResolver).Deserialize(ref reader, options);
+                        ____result.Id = reader.ReadInt32();
                         break;
                     default:
                         reader.Skip();

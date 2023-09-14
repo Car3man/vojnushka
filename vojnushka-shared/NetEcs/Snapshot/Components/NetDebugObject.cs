@@ -1,12 +1,12 @@
 ﻿using MessagePack;
 using VojnushkaShared.NetEcs.Core;
 
-namespace VojnushkaShared.NetEcs.Rpc
+namespace VojnushkaShared.NetEcs.Snapshot
 {
     [MessagePackObject]
-    public class NetDebugRpc : IPackableComponent
+    public class NetDebugObject : IPackableComponent
     {
-        [Key(0)] public string Uid;
+        [Key(0)] public int SomeNumber;
         
         public byte[] PackTo()
         {
@@ -15,8 +15,8 @@ namespace VojnushkaShared.NetEcs.Rpc
 
         public void ParseFrom(byte[] rawBytes)
         {
-            var parsed = MessagePackSerializer.Deserialize<NetDebugRpc>(rawBytes);
-            Uid = parsed.Uid;
+            var parsed = MessagePackSerializer.Deserialize<NetDebugObject>(rawBytes);
+            SomeNumber = parsed.SomeNumber;
         }
     }
 }

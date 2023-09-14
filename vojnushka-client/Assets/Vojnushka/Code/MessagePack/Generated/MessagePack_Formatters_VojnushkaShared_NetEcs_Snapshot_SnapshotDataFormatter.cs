@@ -24,7 +24,7 @@ namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot
             global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             writer.WriteArrayHeader(3);
             writer.Write(value.Tick);
-            writer.Write(value.DependentOnTick);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.DateTime>(formatterResolver).Serialize(ref writer, value.Time, options);
             global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::VojnushkaShared.NetEcs.Snapshot.SnapshotObjectData>>(formatterResolver).Serialize(ref writer, value.Objects, options);
         }
 
@@ -48,7 +48,7 @@ namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot
                         ____result.Tick = reader.ReadInt32();
                         break;
                     case 1:
-                        ____result.DependentOnTick = reader.ReadInt32();
+                        ____result.Time = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.DateTime>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     case 2:
                         ____result.Objects = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Collections.Generic.List<global::VojnushkaShared.NetEcs.Snapshot.SnapshotObjectData>>(formatterResolver).Deserialize(ref reader, options);

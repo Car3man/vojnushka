@@ -21,40 +21,24 @@ namespace MessagePack.Formatters.VojnushkaShared.Domain.MovingCube
 
         public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.Domain.MovingCube.MovingCubeComponent value, global::MessagePack.MessagePackSerializerOptions options)
         {
-            writer.WriteArrayHeader(2);
-            writer.Write(value.X);
-            writer.Write(value.Y);
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            writer.WriteArrayHeader(0);
         }
 
         public global::VojnushkaShared.Domain.MovingCube.MovingCubeComponent Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
-                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
+                return null;
             }
 
-            options.Security.DepthStep(ref reader);
-            var length = reader.ReadArrayHeader();
-            var ____result = new global::VojnushkaShared.Domain.MovingCube.MovingCubeComponent();
-
-            for (int i = 0; i < length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        ____result.X = reader.ReadSingle();
-                        break;
-                    case 1:
-                        ____result.Y = reader.ReadSingle();
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            reader.Depth--;
-            return ____result;
+            reader.Skip();
+            return new global::VojnushkaShared.Domain.MovingCube.MovingCubeComponent();
         }
     }
 

@@ -1,6 +1,6 @@
 ﻿namespace VojnushkaShared.NetEcs.Rpc
 {
-    public struct SendRpcCommandRequest
+    public class SendRpcCommandRequest
     {
         
     }

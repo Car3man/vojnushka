@@ -1,7 +1,12 @@
-﻿namespace VojnushkaShared.NetEcs.Core
+﻿using System;
+
+namespace VojnushkaShared.NetEcs.Core
 {
-    public struct NetTime
+    public class NetTime
     {
+        public int Ping;
         public int Tick;
+        public DateTime LastTickTime;
+        public int LastTickPing;
     }
 }

@@ -1,8 +1,10 @@
-﻿using Arch.Core;
+﻿using System.Numerics;
+using Arch.Core;
 using Arch.Core.Extensions;
 using Arch.System;
 using VojnushkaShared.Domain.MovingCube;
 using VojnushkaShared.NetEcs.Core;
+using VojnushkaShared.NetEcs.Transform;
 
 namespace VojnushkaGameServer.Domain.MovingCube
 {
@@ -11,7 +13,7 @@ namespace VojnushkaGameServer.Domain.MovingCube
         private float _time;
 
         private readonly QueryDescription _movingCubeQuery = new QueryDescription()
-            .WithAll<MovingCubeComponent>();
+            .WithAll<NetTransform, MovingCubeComponent>();
         
         public SpawnAndMoveMovingCubeSystem(World world) : base(world)
         {
@@ -19,8 +21,11 @@ namespace VojnushkaGameServer.Domain.MovingCube
 
         public override void Initialize()
         {
-            var entity = this.World.Create();
-            entity.Add(new NetObject());
+            var entity = World.CreateNetObject();
+            entity.Add(new NetTransform
+            {
+                Position = Vector3.Zero
+            });
             entity.Add(new MovingCubeComponent());
         }
 
@@ -28,9 +33,9 @@ namespace VojnushkaGameServer.Domain.MovingCube
         {
             float sin = (float)Math.Sin(_time) * 3f;
 
-            World.Query(in _movingCubeQuery, (ref MovingCubeComponent movingCube) =>
+            World.Query(in _movingCubeQuery, (ref NetTransform netTransform) =>
             {
-                movingCube.X = sin;
+                netTransform.Position.X = sin;
             });
             
             _time += deltaTime;

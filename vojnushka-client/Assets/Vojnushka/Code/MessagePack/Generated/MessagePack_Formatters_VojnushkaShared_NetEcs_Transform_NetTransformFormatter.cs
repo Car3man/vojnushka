@@ -14,38 +14,42 @@
 #pragma warning disable SA1403 // File may only contain a single namespace
 #pragma warning disable SA1649 // File name should match first type name
 
-namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Core
+namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Transform
 {
-    public sealed class NetObjectFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Core.NetObject>
+    public sealed class NetTransformFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Transform.NetTransform>
     {
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Core.NetObject value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Transform.NetTransform value, global::MessagePack.MessagePackSerializerOptions options)
         {
-            writer.WriteArrayHeader(2);
-            writer.Write(value.Id);
-            writer.Write(value.SomeNumber);
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(1);
+            global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Numerics.Vector3>(formatterResolver).Serialize(ref writer, value.Position, options);
         }
 
-        public global::VojnushkaShared.NetEcs.Core.NetObject Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::VojnushkaShared.NetEcs.Transform.NetTransform Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
-                throw new global::System.InvalidOperationException("typecode is null, struct not supported");
+                return null;
             }
 
             options.Security.DepthStep(ref reader);
+            global::MessagePack.IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var ____result = new global::VojnushkaShared.NetEcs.Core.NetObject();
+            var ____result = new global::VojnushkaShared.NetEcs.Transform.NetTransform();
 
             for (int i = 0; i < length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        ____result.Id = reader.ReadInt32();
-                        break;
-                    case 1:
-                        ____result.SomeNumber = reader.ReadInt32();
+                        ____result.Position = global::MessagePack.FormatterResolverExtensions.GetFormatterWithVerify<global::System.Numerics.Vector3>(formatterResolver).Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();

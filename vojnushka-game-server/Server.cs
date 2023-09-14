@@ -10,7 +10,7 @@ internal class Server : IDisposable
     private float _lastTickTime;
     private float _tickDeltaTime;
 
-    private const int TickRate = 24; // Default is 24
+    private const int TickRate = 12; // Default is 24
     private const int TickDelayMs = (int)(1f / TickRate * 1000);
 
     public Server(ServerWorld serverWorld)

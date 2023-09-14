@@ -1,6 +1,8 @@
 ﻿// ReSharper disable NotAccessedField.Local
 
 using Autofac;
+using MessagePack;
+using MessagePack.Resolvers;
 using VojnushkaGameServer.ConsoleLogger;
 using VojnushkaGameServer.WebSocket;
 using VojnushkaShared.Logger;
@@ -13,6 +15,7 @@ internal class App
     public static async Task Main()
     {
         var containerBuilder = new ContainerBuilder();
+        RegisterMessagePack();
         RegisterLogger(containerBuilder);
         RegisterNetwork(containerBuilder);
         RegisterServerWorld(containerBuilder);
@@ -20,6 +23,18 @@ internal class App
         await using var container = containerBuilder.Build();
         using var server = container.Resolve<Server>();
         await server.Run();
+    }
+
+    private static void RegisterMessagePack()
+    {
+        StaticCompositeResolver.Instance.Register(
+            StandardResolver.Instance,
+            NativeDateTimeResolver.Instance,
+            VectorResolver.Instance
+        );
+
+        var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
+        MessagePackSerializer.DefaultOptions = option;
     }
 
     private static void RegisterLogger(ContainerBuilder containerBuilder)

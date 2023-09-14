@@ -5,6 +5,7 @@
         None = 0,
         Rpc = 1,
         Snapshot = 2,
-        SnapshotAck = 3
+        SnapshotAck = 3,
+        PingPong = 4
     }
 }

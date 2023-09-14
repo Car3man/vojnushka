@@ -47,7 +47,7 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(15)
+            lookup = new global::System.Collections.Generic.Dictionary<global::System.Type, int>(18)
             {
                 { typeof(global::System.Collections.Generic.List<global::VojnushkaShared.NetEcs.Rpc.RpcComponentData>), 0 },
                 { typeof(global::System.Collections.Generic.List<global::VojnushkaShared.NetEcs.Snapshot.SnapshotComponentData>), 1 },
@@ -57,13 +57,16 @@ namespace MessagePack.Resolvers
                 { typeof(global::VojnushkaShared.Domain.MovingCube.MovingCubeComponent), 5 },
                 { typeof(global::VojnushkaShared.NetEcs.Core.MessageData), 6 },
                 { typeof(global::VojnushkaShared.NetEcs.Core.NetObject), 7 },
-                { typeof(global::VojnushkaShared.NetEcs.Rpc.NetDebugRpc), 8 },
-                { typeof(global::VojnushkaShared.NetEcs.Rpc.RpcComponentData), 9 },
-                { typeof(global::VojnushkaShared.NetEcs.Rpc.RpcData), 10 },
-                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotComponentData), 11 },
-                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotComponentValueData), 12 },
-                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotData), 13 },
-                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotObjectData), 14 },
+                { typeof(global::VojnushkaShared.NetEcs.Core.PingPongData), 8 },
+                { typeof(global::VojnushkaShared.NetEcs.Rpc.NetDebugRpc), 9 },
+                { typeof(global::VojnushkaShared.NetEcs.Rpc.RpcComponentData), 10 },
+                { typeof(global::VojnushkaShared.NetEcs.Rpc.RpcData), 11 },
+                { typeof(global::VojnushkaShared.NetEcs.Snapshot.NetDebugObject), 12 },
+                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotComponentData), 13 },
+                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotComponentValueData), 14 },
+                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotData), 15 },
+                { typeof(global::VojnushkaShared.NetEcs.Snapshot.SnapshotObjectData), 16 },
+                { typeof(global::VojnushkaShared.NetEcs.Transform.NetTransform), 17 },
             };
         }
 
@@ -85,13 +88,16 @@ namespace MessagePack.Resolvers
                 case 5: return new MessagePack.Formatters.VojnushkaShared.Domain.MovingCube.MovingCubeComponentFormatter();
                 case 6: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Core.MessageDataFormatter();
                 case 7: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Core.NetObjectFormatter();
-                case 8: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc.NetDebugRpcFormatter();
-                case 9: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc.RpcComponentDataFormatter();
-                case 10: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc.RpcDataFormatter();
-                case 11: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotComponentDataFormatter();
-                case 12: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotComponentValueDataFormatter();
-                case 13: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotDataFormatter();
-                case 14: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotObjectDataFormatter();
+                case 8: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Core.PingPongDataFormatter();
+                case 9: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc.NetDebugRpcFormatter();
+                case 10: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc.RpcComponentDataFormatter();
+                case 11: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Rpc.RpcDataFormatter();
+                case 12: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.NetDebugObjectFormatter();
+                case 13: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotComponentDataFormatter();
+                case 14: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotComponentValueDataFormatter();
+                case 15: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotDataFormatter();
+                case 16: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Snapshot.SnapshotObjectDataFormatter();
+                case 17: return new MessagePack.Formatters.VojnushkaShared.NetEcs.Transform.NetTransformFormatter();
                 default: return null;
             }
         }

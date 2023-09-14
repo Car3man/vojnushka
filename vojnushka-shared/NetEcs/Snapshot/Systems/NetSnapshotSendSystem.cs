@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Arch.Core;
@@ -7,7 +8,6 @@ using Arch.System;
 using MessagePack;
 using VojnushkaShared.Net;
 using VojnushkaShared.NetEcs.Core;
-using VojnushkaShared.NetEcs.Snapshot.Utility;
 
 namespace VojnushkaShared.NetEcs.Snapshot
 {
@@ -25,12 +25,12 @@ namespace VojnushkaShared.NetEcs.Snapshot
 
         public override void Update(in float deltaTime)
         {
-            var currentTick = World.GetLocalTick();
+            var currentTick = World.GetNetTick();
             var snapshotData = new SnapshotData
             {
                 Tick = currentTick,
+                Time = DateTime.UtcNow,
                 Objects = new List<SnapshotObjectData>(),
-                DependentOnTick = currentTick
             };
             
             World.Query(in _netObjectQuery, (in Entity entity, ref NetObject netObject) =>
