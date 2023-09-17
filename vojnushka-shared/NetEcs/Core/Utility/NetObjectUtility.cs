@@ -10,10 +10,16 @@ namespace VojnushkaShared.NetEcs.Core
 
         public static Entity CreateNetObject(this World world)
         {
+            return world.CreateOwnedNetObject(-1);
+        }
+        
+        public static Entity CreateOwnedNetObject(this World world, int ownerId)
+        {
             var entity = world.Create();
             entity.Add(new NetObject
             {
-                Id = world.GetFreeObjectId()
+                Id = world.GetFreeObjectId(),
+                OwnerId = ownerId
             });
             return entity;
         }

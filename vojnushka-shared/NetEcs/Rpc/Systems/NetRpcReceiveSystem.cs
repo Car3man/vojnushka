@@ -12,43 +12,55 @@ namespace VojnushkaShared.NetEcs.Rpc
     {
         private readonly INetListener? _netListener;
         private readonly INetClient? _netClient;
+        private readonly bool _isServer;
 
         public NetRpcReceiveSystem(World world, INetListener netListener) : base(world)
         {
+            _isServer = true;
             _netListener = netListener;
-            _netListener.OnPeerMessage += OnPeerMessage;
         }
 
         public NetRpcReceiveSystem(World world, INetClient netClient) : base(world)
         {
+            _isServer = false;
             _netClient = netClient;
-            _netClient.OnMessage += OnServerMessage;
+        }
+
+        public override void Initialize()
+        {
+            if (_isServer)
+            {
+                _netListener!.OnPeerMessage += OnPeerMessage;
+            }
+            else
+            {
+                _netClient!.OnMessage += OnServerMessage;
+            }
         }
 
         public override void Dispose()
         {
-            if (_netListener != null)
+            if (_isServer)
             {
-                _netListener.OnPeerMessage -= OnPeerMessage;
+                _netListener!.OnPeerMessage -= OnPeerMessage;
             }
-            
-            if (_netClient != null)
+            else
             {
-                _netClient.OnMessage -= OnServerMessage;
+                _netClient!.OnMessage -= OnServerMessage;
             }
         }
 
         private void OnPeerMessage(IPeer peer, byte[] data)
         {
-            ProcessReceivedRawMessage(data);
+            ProcessReceivedRawMessage(peer.IdNumber, data);
         }
 
         private void OnServerMessage(byte[] data)
         {
-            ProcessReceivedRawMessage(data);
+            ProcessReceivedRawMessage(-1, data);
         }
 
-        private void ProcessReceivedRawMessage(byte[] data)
+        private void ProcessReceivedRawMessage(int senderId, byte[] data)
         {
             if (!TryGetRpcMessage(data, out var message))
             {
@@ -58,7 +70,10 @@ namespace VojnushkaShared.NetEcs.Rpc
             var rpc = MessagePackSerializer.Deserialize<RpcData>(message.RawBytes);
             
             var entity = this.World.Create();
-            entity.Add<ReceiveRpcCommandRequest>();
+            entity.Add(new ReceiveRpcCommandRequest
+            {
+                SenderId = senderId
+            });
             
             foreach (var rpcComponent in rpc.Components)
             {

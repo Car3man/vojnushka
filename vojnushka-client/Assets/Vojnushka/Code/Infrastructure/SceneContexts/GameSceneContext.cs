@@ -8,9 +8,6 @@ namespace Vojnushka.Infrastructure
 {
     public class GameSceneContext : SceneContext
     {
-        [SerializeField] private Mesh movingCubeMesh;
-        [SerializeField] private Material movingCubeMaterial;
-        
         protected override void RegisterDependencies(ContainerBuilder containerBuilder)
         {
             RegisterNetwork(containerBuilder);
@@ -33,8 +30,6 @@ namespace Vojnushka.Infrastructure
 
         private void RegisterGameWorld(ContainerBuilder containerBuilder)
         {
-            containerBuilder.RegisterInstance(movingCubeMesh);
-            containerBuilder.RegisterInstance(movingCubeMaterial);
             containerBuilder.RegisterType<GameWorld>();
         }
     }

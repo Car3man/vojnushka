@@ -1,8 +1,7 @@
 ﻿using System;
 using Arch.Core;
 using Arch.System;
-using UnityEngine;
-using Vojnushka.Game.MovingCube.Systems;
+using Vojnushka.Game.Player;
 using VojnushkaShared.Net;
 using VojnushkaShared.NetEcs.Core;
 using VojnushkaShared.NetEcs.Rpc;
@@ -19,24 +18,24 @@ namespace Vojnushka.Game
     
         public GameWorld(
             ILogger logger,
-            INetClient netClient, INetConnectConfig netConnectConfig,
-            Mesh movingCubeMesh, Material movingCubeMaterial)
+            INetClient netClient, INetConnectConfig netConnectConfig)
         {
             _world = World.Create();
             _group = new Group<float>(
                 new NetClientConnectSystem(_world, logger, netClient, netConnectConfig),
                 new NetTimeSystem(_world, logger, netClient),
-                new NetSnapshotReceiveSystem(_world, logger, netClient),
+                new NetSnapshotReceiveSystem(_world, netClient),
                 new NetRpcReceiveSystem(_world, netClient),
                 new NetRpcSendSystem(_world, netClient),
-                new NetInterpolateTransformSystem(_world, logger),
+                new NetInterpolateTransformSystem(_world),
                 // -- DEBUG new NetDebugRpcSystem(_world, logger, true, false),
                 // -- DEBUG new NetDebugSnapshotSystem(_world, logger, false),
                 // Game Logic
                 // ----------
-                new MovingCubeRenderSystem(_world, movingCubeMesh, movingCubeMaterial),
+                new PlayerInputSystem(_world),
+                new PlayerObjectSyncSystem(_world),
                 // ----------
-                new NetSnapshotTrailCleanUpSystem(_world),
+                new NetSnapshotCleanUpSystem(_world),
                 new NetCleanUpReceivedRpcSystem(_world)
             );
         }

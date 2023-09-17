@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 using Arch.Core;
 using Arch.System;
-using VojnushkaShared.Logger;
 using VojnushkaShared.NetEcs.Core;
 using VojnushkaShared.NetEcs.Snapshot;
 
@@ -11,7 +9,6 @@ namespace VojnushkaShared.NetEcs.Transform
 {
     public class NetInterpolateTransformSystem : BaseSystem<World, float>
     {
-        private readonly ILogger _logger;
         private bool _warmedUp;
         
         private readonly QueryDescription _netSnapshotTrail = new QueryDescription()
@@ -19,9 +16,8 @@ namespace VojnushkaShared.NetEcs.Transform
         private readonly QueryDescription _netTransformQuery = new QueryDescription()
             .WithAll<NetTransform>();
         
-        public NetInterpolateTransformSystem(World world, ILogger logger) : base(world)
+        public NetInterpolateTransformSystem(World world) : base(world)
         {
-            _logger = logger;
         }
 
         public override void Update(in float deltaTime)
@@ -42,7 +38,7 @@ namespace VojnushkaShared.NetEcs.Transform
                 _warmedUp = true;
             }
             
-            World.Query(in _netTransformQuery, (ref NetObject netObject, ref NetTransform netTransform) =>
+            World.Query(in _netTransformQuery, (ref NetTransform netTransform) =>
             {
                 netTransform.InterpolatedPosition = _warmedUp ?
                     Vector3.Lerp(netTransform.PrevPosition, netTransform.Position, t) :

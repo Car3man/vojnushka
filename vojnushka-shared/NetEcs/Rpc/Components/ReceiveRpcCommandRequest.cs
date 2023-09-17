@@ -2,6 +2,6 @@
 {
     public class ReceiveRpcCommandRequest
     {
-        
+        public int SenderId;
     }
 }

@@ -5,7 +5,7 @@ using Vojnushka.VectorConverters;
 using VojnushkaShared.Domain.MovingCube;
 using VojnushkaShared.NetEcs.Transform;
 
-namespace Vojnushka.Game.MovingCube.Systems
+namespace Vojnushka.Game.MovingCube
 {
     public class MovingCubeRenderSystem : BaseSystem<World, float>
     {

@@ -16,10 +16,10 @@
 
 namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Core
 {
-    public sealed class NetObjectFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Core.NetObject>
+    public sealed class BaseNetComponentFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Core.BaseNetComponent>
     {
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Core.NetObject value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Core.BaseNetComponent value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -27,40 +27,18 @@ namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Core
                 return;
             }
 
-            writer.WriteArrayHeader(2);
-            writer.Write(value.Id);
-            writer.Write(value.OwnerId);
+            writer.WriteArrayHeader(0);
         }
 
-        public global::VojnushkaShared.NetEcs.Core.NetObject Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::VojnushkaShared.NetEcs.Core.BaseNetComponent Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
                 return null;
             }
 
-            options.Security.DepthStep(ref reader);
-            var length = reader.ReadArrayHeader();
-            var ____result = new global::VojnushkaShared.NetEcs.Core.NetObject();
-
-            for (int i = 0; i < length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        ____result.Id = reader.ReadInt32();
-                        break;
-                    case 1:
-                        ____result.OwnerId = reader.ReadInt32();
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            reader.Depth--;
-            return ____result;
+            reader.Skip();
+            return new global::VojnushkaShared.NetEcs.Core.BaseNetComponent();
         }
     }
 

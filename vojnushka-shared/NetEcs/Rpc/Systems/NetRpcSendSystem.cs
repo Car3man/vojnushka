@@ -50,7 +50,7 @@ namespace VojnushkaShared.NetEcs.Rpc
                     {
                         var componentDto = new RpcComponentData
                         {
-                            Type = packableComponent.GetType(),
+                            Type = entityComponent.GetType(),
                             RawBytes = packableComponent.PackTo()
                         };
                         

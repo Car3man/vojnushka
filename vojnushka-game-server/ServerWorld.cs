@@ -1,6 +1,6 @@
 ﻿using Arch.Core;
 using Arch.System;
-using VojnushkaGameServer.Domain.MovingCube;
+using VojnushkaGameServer.Domain.Player;
 using VojnushkaShared.Logger;
 using VojnushkaShared.Net;
 using VojnushkaShared.NetEcs.Core;
@@ -28,7 +28,8 @@ internal class ServerWorld : IDisposable
             // -- DEBUG new NetDebugSnapshotSystem(_world, logger, true),
             // Game Logic
             // ----------
-            new SpawnAndMoveMovingCubeSystem(_world),
+            new PlayerSpawnSystem(_world, netListener),
+            new PlayerMoveSystem(_world),
             // ----------
             new NetSnapshotSendSystem(_world, netListener),
             new NetCleanUpReceivedRpcSystem(_world)

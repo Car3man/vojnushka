@@ -7,16 +7,13 @@ using Arch.Core.Extensions;
 using Arch.Core.Utils;
 using Arch.System;
 using MessagePack;
-using VojnushkaShared.Logger;
 using VojnushkaShared.Net;
 using VojnushkaShared.NetEcs.Core;
-using VojnushkaShared.NetEcs.Transform;
 
 namespace VojnushkaShared.NetEcs.Snapshot
 {
     public class NetSnapshotReceiveSystem : BaseSystem<World, float>
     {
-        private readonly ILogger _logger;
         private readonly INetClient _netClient;
 
         private SnapshotData? _snapshotQueue;
@@ -25,9 +22,8 @@ namespace VojnushkaShared.NetEcs.Snapshot
         private readonly QueryDescription _netObjectQuery = new QueryDescription()
             .WithAll<NetObject>();
 
-        public NetSnapshotReceiveSystem(World world, ILogger logger, INetClient netClient) : base(world)
+        public NetSnapshotReceiveSystem(World world, INetClient netClient) : base(world)
         {
-            _logger = logger;
             _netClient = netClient;
             _netClient.OnMessage += OnServerMessage;
         }
@@ -39,6 +35,8 @@ namespace VojnushkaShared.NetEcs.Snapshot
 
         public override void Update(in float deltaTime)
         {
+            
+            
             if (!_snapshotQueue.HasValue)
             {
                 return;
@@ -85,6 +83,18 @@ namespace VojnushkaShared.NetEcs.Snapshot
             });
         }
 
+        private void CreateNetObjectCreatedEvent(EntityReference reference)
+        {
+            var entity = this.World.Create();
+            entity.Add(new NetObjectCreated(reference));
+        }
+
+        private void CreateNetObjectDestroyedEvent(EntityReference reference)
+        {
+            var entity = this.World.Create();
+            entity.Add(new NetObjectDestroyed(reference));
+        }
+
         private void UpdateOrDestroyNetObjects(SnapshotData snapshotData, out HashSet<int> outMissingObjects)
         {
             var missingObjects = new HashSet<int>();
@@ -109,7 +119,9 @@ namespace VojnushkaShared.NetEcs.Snapshot
                 }
                 else
                 {
-                    objectsToDestroy.Add(entity.Reference());
+                    var entityReference = entity.Reference();
+                    objectsToDestroy.Add(entityReference);
+                    CreateNetObjectDestroyedEvent(entityReference);
                 }
             });
             
@@ -123,12 +135,13 @@ namespace VojnushkaShared.NetEcs.Snapshot
 
         private void CreateMissingObjects(SnapshotData snapshotData, HashSet<int> missingObjects)
         {
-            foreach (var missingObject in missingObjects)
+            foreach (var missingObjectId in missingObjects)
             {
-                var objectInSnapshot = snapshotData.Objects.First(x => x.Id == missingObject);
+                var objectInSnapshot = snapshotData.Objects.First(x => x.Id == missingObjectId);
                 var entity = this.World.Create();
                 CreateMissingComponents(entity, objectInSnapshot.Components,
                     objectInSnapshot.Components.Select(x => x.Type!).ToHashSet());
+                CreateNetObjectCreatedEvent(entity.Reference());
             }
         }
 

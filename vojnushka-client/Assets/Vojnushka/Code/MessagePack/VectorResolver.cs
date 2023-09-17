@@ -33,7 +33,8 @@ namespace MessagePack.Resolvers
     {
         static readonly Dictionary<Type, object> FormatterMap = new()
         {
-            {typeof(Vector3), new Vector3Formatter()}
+            { typeof(Vector3), new Vector3Formatter() },
+            { typeof(Vector2), new Vector2Formatter() },
         };
 
         internal static object GetFormatter(Type type)
@@ -60,6 +61,23 @@ namespace MessagePack.Resolvers
         {
             return new Vector3(
                 reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            );
+        }
+    }
+    
+    class Vector2Formatter : IMessagePackFormatter<Vector2>
+    {
+        public void Serialize(ref MessagePackWriter writer, Vector2 value, MessagePackSerializerOptions options)
+        {
+            writer.Write(value.X);
+            writer.Write(value.Y);
+        }
+
+        Vector2 IMessagePackFormatter<Vector2>.Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+        {
+            return new Vector2(
                 reader.ReadSingle(),
                 reader.ReadSingle()
             );

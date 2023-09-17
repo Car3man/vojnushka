@@ -1,12 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using MessagePack;
-using UnityEngine;
+﻿using UnityEngine;
 using Vojnushka.Infrastructure;
-using VojnushkaShared.NetEcs.Snapshot;
-using VojnushkaShared.NetEcs.Transform;
 
 namespace Vojnushka.Game
 {

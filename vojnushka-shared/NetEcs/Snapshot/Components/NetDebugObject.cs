@@ -4,16 +4,16 @@ using VojnushkaShared.NetEcs.Core;
 namespace VojnushkaShared.NetEcs.Snapshot
 {
     [MessagePackObject]
-    public class NetDebugObject : IPackableComponent
+    public class NetDebugObject : BaseNetComponent
     {
         [Key(0)] public int SomeNumber;
         
-        public byte[] PackTo()
+        public override byte[] PackTo()
         {
             return MessagePackSerializer.Serialize(this);
         }
 
-        public void ParseFrom(byte[] rawBytes)
+        public override void ParseFrom(byte[] rawBytes)
         {
             var parsed = MessagePackSerializer.Deserialize<NetDebugObject>(rawBytes);
             SomeNumber = parsed.SomeNumber;

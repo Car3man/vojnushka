@@ -25,34 +25,29 @@ namespace VojnushkaShared.NetEcs.Core
 
         public NetTimeSystem(World world, ILogger logger, INetListener netListener) : base(world)
         {
+            _isServer = true;
             _logger = logger;
             _netListener = netListener;
-            _netListener.OnPeerMessage += OnPeerMessage;
-            _isServer = true;
         }
         
         public NetTimeSystem(World world, ILogger logger, INetClient netClient) : base(world)
         {
+            _isServer = false;
             _logger = logger;
             _netClient = netClient;
-            _netClient.OnMessage += OnServerMessage;
-            _isServer = false;
-        }
-
-        public override void Dispose()
-        {
-            if (_isServer)
-            {
-                _netListener!.OnPeerMessage -= OnPeerMessage;
-            }
-            else
-            {
-                _netClient!.OnMessage -= OnServerMessage;
-            }
         }
 
         public override void Initialize()
         {
+            if (_isServer)
+            {
+                _netListener!.OnPeerMessage += OnPeerMessage;
+            }
+            else
+            {
+                _netClient!.OnMessage += OnServerMessage;
+            }
+            
             var entity = this.World.Create();
             entity.Add(new NetTime());
         }
@@ -77,6 +72,18 @@ namespace VojnushkaShared.NetEcs.Core
             }
 
             _time += deltaTime;
+        }
+
+        public override void Dispose()
+        {
+            if (_isServer)
+            {
+                _netListener!.OnPeerMessage -= OnPeerMessage;
+            }
+            else
+            {
+                _netClient!.OnMessage -= OnServerMessage;
+            }
         }
 
         private void Ping()

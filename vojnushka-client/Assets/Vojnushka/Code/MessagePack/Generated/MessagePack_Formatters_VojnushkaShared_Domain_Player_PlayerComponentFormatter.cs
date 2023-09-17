@@ -14,12 +14,12 @@
 #pragma warning disable SA1403 // File may only contain a single namespace
 #pragma warning disable SA1649 // File name should match first type name
 
-namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Core
+namespace MessagePack.Formatters.VojnushkaShared.Domain.Player
 {
-    public sealed class NetObjectFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.NetEcs.Core.NetObject>
+    public sealed class PlayerComponentFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::VojnushkaShared.Domain.Player.PlayerComponent>
     {
 
-        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.NetEcs.Core.NetObject value, global::MessagePack.MessagePackSerializerOptions options)
+        public void Serialize(ref global::MessagePack.MessagePackWriter writer, global::VojnushkaShared.Domain.Player.PlayerComponent value, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (value == null)
             {
@@ -27,40 +27,18 @@ namespace MessagePack.Formatters.VojnushkaShared.NetEcs.Core
                 return;
             }
 
-            writer.WriteArrayHeader(2);
-            writer.Write(value.Id);
-            writer.Write(value.OwnerId);
+            writer.WriteArrayHeader(0);
         }
 
-        public global::VojnushkaShared.NetEcs.Core.NetObject Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        public global::VojnushkaShared.Domain.Player.PlayerComponent Deserialize(ref global::MessagePack.MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
         {
             if (reader.TryReadNil())
             {
                 return null;
             }
 
-            options.Security.DepthStep(ref reader);
-            var length = reader.ReadArrayHeader();
-            var ____result = new global::VojnushkaShared.NetEcs.Core.NetObject();
-
-            for (int i = 0; i < length; i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        ____result.Id = reader.ReadInt32();
-                        break;
-                    case 1:
-                        ____result.OwnerId = reader.ReadInt32();
-                        break;
-                    default:
-                        reader.Skip();
-                        break;
-                }
-            }
-
-            reader.Depth--;
-            return ____result;
+            reader.Skip();
+            return new global::VojnushkaShared.Domain.Player.PlayerComponent();
         }
     }
 
