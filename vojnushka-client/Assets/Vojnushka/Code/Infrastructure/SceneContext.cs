@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Vojnushka.Infrastructure
 {
     [DefaultExecutionOrder(-1000)]
-    public abstract class SceneContext : MonoBehaviour, IAsyncDisposable
+    public abstract class SceneContext : MonoBehaviour
     {
         [SerializeField] protected bool injectToGameObjects = true;
         private readonly List<IDisposable> _gameObjectsToDispose = new();

@@ -1,12 +1,13 @@
 ﻿// ReSharper disable NotAccessedField.Local
 
-using Autofac;
-using MessagePack;
-using MessagePack.Resolvers;
+using SimpleInjector;
+using SimpleInjector.Diagnostics;
+using SimpleInjector.Lifestyles;
 using VojnushkaGameServer.ConsoleLogger;
-using VojnushkaGameServer.WebSocket;
+using VojnushkaGameServer.Domain;
+using VojnushkaGameServer.WebSocketDriver;
 using VojnushkaShared.Logger;
-using VojnushkaShared.Net;
+using VojnushkaShared.NetDriver;
 
 namespace VojnushkaGameServer;
 
@@ -14,56 +15,38 @@ internal class App
 {
     public static async Task Main()
     {
-        var containerBuilder = new ContainerBuilder();
-        RegisterMessagePack();
-        RegisterLogger(containerBuilder);
-        RegisterNetwork(containerBuilder);
-        RegisterServerWorld(containerBuilder);
-        RegisterServer(containerBuilder);
-        await using var container = containerBuilder.Build();
-        using var server = container.Resolve<Server>();
-        await server.Run();
+        var container = new Container();
+        container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
+        RegisterLogger(container);
+        RegisterNetwork(container);
+        RegisterServerWorld(container);
+        RegisterServer(container);
+        container.Verify();
+
+        await using Scope scope = AsyncScopedLifestyle.BeginScope(container);
+        await container.GetInstance<Server>().Run();
     }
 
-    private static void RegisterMessagePack()
+    private static void RegisterLogger(Container container)
     {
-        StaticCompositeResolver.Instance.Register(
-            StandardResolver.Instance,
-            NativeDateTimeResolver.Instance,
-            VectorResolver.Instance
-        );
-
-        var option = MessagePackSerializerOptions.Standard.WithResolver(StaticCompositeResolver.Instance);
-        MessagePackSerializer.DefaultOptions = option;
+        container.Register<ILogger, Logger>(Lifestyle.Singleton);
     }
 
-    private static void RegisterLogger(ContainerBuilder containerBuilder)
+    private static void RegisterNetwork(Container container)
     {
-        containerBuilder
-            .RegisterType<Logger>()
-            .As<ILogger>()
-            .SingleInstance();
+        container.Register<INetListener, WebSocketListener>(Lifestyle.Scoped);
+        container.GetRegistration(typeof(INetListener))!.Registration
+            .SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "INetListener is disposed by code.");
+        container.RegisterInstance<INetConnectConfig>(new NetConnectConfig("127.0.0.1", 6969));
     }
 
-    private static void RegisterNetwork(ContainerBuilder containerBuilder)
+    private static void RegisterServerWorld(Container container)
     {
-        containerBuilder
-            .RegisterType<WebSocketListener>()
-            .As<INetListener>()
-            .SingleInstance();
-        containerBuilder
-            .RegisterInstance(new NetConnectConfig("127.0.0.1", 6969))
-            .As<INetConnectConfig>()
-            .SingleInstance();
-    }
-
-    private static void RegisterServerWorld(ContainerBuilder containerBuilder)
-    {
-        containerBuilder.RegisterType<ServerWorld>().SingleInstance();
+        container.Register<ServerWorld>(Lifestyle.Scoped);
     }
     
-    private static void RegisterServer(ContainerBuilder containerBuilder)
+    private static void RegisterServer(Container container)
     {
-        containerBuilder.RegisterType<Server>().SingleInstance();
+        container.Register<Server>(Lifestyle.Scoped);
     }
 }

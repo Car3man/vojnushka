@@ -8,4 +8,9 @@ internal class Logger : ILogger
     {
         Console.WriteLine(message);
     }
+
+    public void Log(string tag, string message)
+    {
+        Console.WriteLine($"[{tag}]: {message}");
+    }
 }

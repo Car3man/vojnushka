@@ -1,4 +1,6 @@
-﻿namespace VojnushkaGameServer;
+﻿using VojnushkaGameServer.Domain;
+
+namespace VojnushkaGameServer;
 
 internal class Server : IDisposable
 {
@@ -20,7 +22,7 @@ internal class Server : IDisposable
     
     public async Task Run()
     {
-        _serverWorld.Initialize();
+        await _serverWorld.InitializeAndStart();
         
         while (!_stop)
         {

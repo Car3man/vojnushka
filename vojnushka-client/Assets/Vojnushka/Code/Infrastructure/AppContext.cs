@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Autofac;
 using Vojnushka.EditorLogger;
 using VojnushkaShared.Logger;
 
 namespace Vojnushka.Infrastructure
 {
-    public class AppContext : IAsyncDisposable
+    public class AppContext
     {
         public IContainer Container { get; private set; }
 

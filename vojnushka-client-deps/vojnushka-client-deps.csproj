@@ -21,21 +21,13 @@
     <OutputPath>..\vojnushka-client\Assets\Vojnushka\Plugins\Deps\</OutputPath>
     <DebugType>none</DebugType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Arch" Version="1.2.6" />
-    <PackageReference Include="Autofac" Version="7.1.0" />
-  </ItemGroup>
-
-
+  
   <ItemGroup>
     <ProjectReference Include="..\vojnushka-shared\vojnushka-shared.csproj" />
   </ItemGroup>
 
-
   <Target Name="PostPublish" AfterTargets="Publish">
-    <Exec Command="call DeleteMessagePackDLL.bat $(ProjectDir)" />
-    <Exec Command="call MessagePackCodeGen.bat $(ProjectDir)" />
+    <Exec Command="call DeleteMorpehDLL.bat $(ProjectDir)" />
   </Target>
 
 </Project>

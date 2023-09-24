@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿    using UnityEngine;
 using Vojnushka.Infrastructure;
 
 namespace Vojnushka.Game
@@ -12,10 +12,10 @@ namespace Vojnushka.Game
         {
             _gameWorld = gameWorld;
         }
-        
-        private void Start()
+
+        private async void Start()
         {
-            _gameWorld.Initialize();
+            await _gameWorld.StartConnectAsync();
         }
 
         private void Update()

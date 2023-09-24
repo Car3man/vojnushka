@@ -1,1 +1,0 @@
-dotnet mpc -i "%1\..\vojnushka-shared\vojnushka-shared.csproj" -o "%1\..\vojnushka-client\Assets\Vojnushka\Code\MessagePack\Generated"

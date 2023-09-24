@@ -1,59 +1,57 @@
 ﻿using System;
-using Arch.Core;
-using Arch.System;
-using Vojnushka.Game.Player;
+using System.Threading.Tasks;
+using Scellecs.Morpeh;
 using VojnushkaShared.Net;
-using VojnushkaShared.NetEcs.Core;
-using VojnushkaShared.NetEcs.Rpc;
-using VojnushkaShared.NetEcs.Snapshot;
-using VojnushkaShared.NetEcs.Transform;
 using ILogger = VojnushkaShared.Logger.ILogger;
 
 namespace Vojnushka.Game
 {
     public class GameWorld : IDisposable
     {
+        private readonly ILogger _logger;
+        private readonly INetClient _netClient;
+        private readonly INetConnectConfig _netConnectConfig;
+        
         private readonly World _world;
-        private readonly Group<float> _group;
-    
+        private readonly SystemsGroup _group;
+
         public GameWorld(
             ILogger logger,
             INetClient netClient, INetConnectConfig netConnectConfig)
         {
+            _logger = logger;
+            _netClient = netClient;
+            _netConnectConfig = netConnectConfig;
+            
             _world = World.Create();
-            _group = new Group<float>(
-                new NetClientConnectSystem(_world, logger, netClient, netConnectConfig),
-                new NetTimeSystem(_world, logger, netClient),
-                new NetSnapshotReceiveSystem(_world, netClient),
-                new NetRpcReceiveSystem(_world, netClient),
-                new NetRpcSendSystem(_world, netClient),
-                new NetInterpolateTransformSystem(_world),
-                // -- DEBUG new NetDebugRpcSystem(_world, logger, true, false),
-                // -- DEBUG new NetDebugSnapshotSystem(_world, logger, false),
-                // Game Logic
-                // ----------
-                new PlayerInputSystem(_world),
-                new PlayerObjectSyncSystem(_world),
-                // ----------
-                new NetSnapshotCleanUpSystem(_world),
-                new NetCleanUpReceivedRpcSystem(_world)
-            );
+            _world.UpdateByUnity = false;
+            _group = _world.CreateSystemsGroup();
+            
+            RegisterSystems();
+        }
+        
+        private void RegisterSystems()
+        {
+        
         }
 
-        public void Initialize()
+        public async Task StartConnectAsync()
         {
-            _group.Initialize();
+            await _netClient.ConnectAsync(_netConnectConfig);
+            _logger.Log("[GameWorld] Start connect success.");
         }
 
-        public void Update(in float deltaTime)
+        public void Update(float deltaTime)
         {
-            _group.Update(deltaTime);
+            _world.Update(deltaTime);
         }
 
         public void Dispose()
         {
-            _group.Dispose();
-            _world.Dispose();
+            if (!_world.IsDisposed)
+            {
+                _world.Dispose();
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using NativeWebSocket;
 using UnityEngine;
@@ -9,8 +11,9 @@ namespace Vojnushka.WebSocket
     public class WebSocketClient : MonoBehaviour, INetClient
     {
         private bool _tryToConnect;
-        private NativeWebSocket.WebSocket _webSocket;
+        private TaskCompletionSource<object> _tryConnectCompletionSource;
         private readonly Queue<byte[]> _sendQueue = new();
+        private NativeWebSocket.WebSocket _webSocket;
 
         public bool Connected { get; private set; }
         
@@ -18,20 +21,28 @@ namespace Vojnushka.WebSocket
         [CanBeNull] public event MessageDelegate OnMessage;
         [CanBeNull] public event DisconnectDelegate OnDisconnect;
         
-        public async void Connect(INetConnectConfig netConnectConfig)
+        public async Task ConnectAsync(INetConnectConfig netConnectConfig)
         {
             if (Connected || _tryToConnect)
             {
-                return;
+                throw new Exception("Cannot connect due already connected or trying to connect.");
             }
 
             _tryToConnect = true;
+            _tryConnectCompletionSource = new TaskCompletionSource<object>();
+            
             _webSocket = new NativeWebSocket.WebSocket($"ws://{netConnectConfig.Ip}:{netConnectConfig.Port}");
+            
             _webSocket.OnOpen += OnSocketOpen;
             _webSocket.OnMessage += OnSocketMessage;
             _webSocket.OnError += OnSocketError;
             _webSocket.OnClose += OnSocketClose;
-            await _webSocket.Connect();
+            
+#pragma warning disable CS4014
+            _webSocket.Connect();
+#pragma warning restore CS4014
+
+            await _tryConnectCompletionSource.Task;
         }
 
         public void Send(byte[] data)
@@ -52,6 +63,7 @@ namespace Vojnushka.WebSocket
         private void OnSocketOpen()
         {
             _tryToConnect = false;
+            _tryConnectCompletionSource.SetResult(null);
             Connected = true;
             OnConnect?.Invoke();
         }
@@ -68,6 +80,7 @@ namespace Vojnushka.WebSocket
             _webSocket.OnClose -= OnSocketClose;
             
             _tryToConnect = false;
+            _tryConnectCompletionSource.SetException(new SystemException(errorMsg));
         }
 
         private void OnSocketClose(WebSocketCloseCode closeCode)
